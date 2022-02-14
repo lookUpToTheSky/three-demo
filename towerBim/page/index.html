@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
+    <link rel="shortcut icon" href="../img/towerIcon.png" type="image/x-icon">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>长沙垃圾焚烧电厂-冷却塔智能监测</title>
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/reset.css">
+    <link rel="stylesheet" href="../css/index.css">
+
+    <script type="text/javascript" src="../lib/three.min.js"></script>
+    <script type="text/javascript" src="../lib/OrbitControls.js"></script>
+    <script type="text/javascript" src="../lib/inflate.min.js"></script>
+    <script type="text/javascript" src="../lib/FBXLoader.js"></script>
+    <script type="text/javascript" src="../lib/MTLLoader.js"></script>
+    <script type="text/javascript" src="../lib/OBJLoader.js"></script>
+
+    <script type="text/javascript" src="../lib/CopyShader.js"></script>
+    <script type="text/javascript" src="../lib/EffectComposer.js"></script>
+    <script type="text/javascript" src="../lib/RenderPass.js"></script>
+    <script type="text/javascript" src="../lib/ShaderPass.js"></script>
+    <script type="text/javascript" src="../lib/OutlinePass.js"></script>
+    <script type="text/javascript" src="../lib/SMAAShader.js"></script>
+    <script type="text/javascript" src="../lib/SMAAPass.js"></script>
+    <script type="text/javascript" src="../lib/LuminosityHighPassShader.js"></script>
+    <script type="text/javascript" src="../lib/UnrealBloomPass.js"></script>
+
+    <script type="text/javascript" src="../lib/onEvent.js"></script>
+    <script type="text/javascript" src="../lib/tween.umd.js"></script>
+    <script type="text/javascript" src="../lib/jquery.js"></script>
+    <script type="text/javascript" src="../lib/echarts.min.js"></script>
+</head>
+<body>
+    <script type="text/javascript" src="../js/canvasView.js"></script>
+    <script type="text/javascript" src="../js/index.js?v=1.1.1"></script>
+    <div class="container" style="display: none;">
+        <div class="sensorInfo">
+            <img class="close" src="../img/closeInfo.svg" alt="" />
+            <div id="info"></div>
+        </div>
+        <div class="header">
+            <span class="title">长沙垃圾电厂冷却塔监测平台</span>
+            <div class="wether">
+                <ul>
+                    <li>
+                        <span class="fa fa-cloud fa-lg" style="color:#3299cc"></span>
+                        天气：<span id="cond_txt">-</span>
+                    </li>
+                    <li>
+                       温度： <span id="tmp">-</span>
+                    </li>
+                    <li>
+                        湿度：<span id="hum">-</span>
+                    </li>
+                    <li>
+                        降雨量：<span id="pcpn">-</span>
+                    </li>
+                    <li>
+                        风力：<span id="wind_sc">-</span>
+                    </li>
+                    <li>
+                        风速：<span id="wind_spd">-</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="time">
+                <span class="fa fa-calendar" style="color:#3299cc"></span>
+                <span id="houer">-</span>
+                <div>
+                    <span id="week">-</span>
+                    <span id="day">-</span>
+                </div>
+            </div>
+        </div>
+        <div class="pageLeft">
+            <div class="dataInfo">
+                <div class="title">项目基本情况(在线数/总数)</div>
+                <ul>
+                    <li>
+                        <div class="dataBox">
+                            <div>群组：<span id="allGpNum">···</span>个</div>|
+                            <div>采集点：<span id="sensorNum">···</span>/<span id="allSensorNum">···</span>个</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="dataBox">
+                            <div>数据量：<span id="allDataNum">···</span>条</div>|
+                            <div>预警数：<span id="allWarnNum">···</span>条</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="dataBox">
+                             <div>桩深：<span id="weight">20</span>米</div>
+                        </div>
+                    </li>
+                </ul>
+            </div> 
+            <div class="echartWarpper">
+                <div class="fullScreen"><img src="../img/largeSc.svg" alt=""></div>
+                <div class="title echartTitle">···-时间曲线图</div>
+                <p>无数据</p>
+                <div id="dataEchart">
+                </div>
+            </div>
+            <div class="lightStatus">
+                <div class="title">采集点状态</div>
+                <ul>
+                    <li><span></span>在线</li>
+                    <li><span></span>离线</li>
+                    <li><span></span>禁用</li>
+                </ul>
+            </div>
+        </div>
+        <div class="pageRight">
+            <div class="warnMsg1">
+                <div class="title">预警信息</div>
+                <p style="background: rgba(31,59,107,0.8);
+                line-height: 40px;
+                font-size: 18px;
+                color: orangered;
+                text-align:center;"></p>
+                <table border="0">
+                </table>
+            </div>
+            <div class="getDataInfo">
+                <div class="title">数据采集频率</div>
+                <ul>
+                    <li><div>实时采集频率<span id="times">30s</span>/次</div></li>
+                    <li><div>24小时最大值<span id="h24MaxValue">···</span>,速率<span id="h24Speed">···</span>/小时</div></li>
+                    <li><div>15天最大值<span id="d15MaxValue">···</span>,速率<span id="d15Speed">···</span>/天</div></li>
+                </ul>
+            </div>   
+        </div>
+        <div class="pilelist">
+            <ul>
+            </ul>
+        </div>
+        <ul class="theme">
+            <li class="selected" value="1">现实模式</li>
+            <li value="2">数据模式</li>
+        </ul>
+        <div class="screenMask">
+            <div class="fullEchartWarpper">
+                <div class="closeFullScreen"><img src="../img/closeInfo.svg" alt=""></div>
+                <div class="title echartTitle">···-时间曲线图</div>
+                <p>无数据</p>
+                <div id="fullDataEchart">
+                </div>
+            </div>
+        </div>
+        <div id="loading">
+            <span class="fa fa-spinner fa-pulse fa-5x"></span>
+        </div>
+    </div>
+</body>
+</html>

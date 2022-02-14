@@ -1,0 +1,459 @@
+<!DOCTYPE>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>数据对比</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <script type="text/javascript" src="../lib/jquery.min.js"></script>
+    <script type="text/javascript" src="../lib/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../lib/echarts.min.js"></script>
+    <script type="text/javascript" src="../lib/laydate.js"></script>
+    <style>
+        .content {
+            background: url('../image/dataCompare.png') no-repeat;
+            background-size: 100% 100%;
+        }
+        input::placeholder {
+            color:#17a2b8 !important;
+        }
+    </style>
+</head>
+<body onload="init()">
+    <div  class="container-fluid pl-0 bg-black w-100 vh-100 pt-4">
+        <section class="ml-4" style="width: 95%; height: 95%">
+            <div class="content d-flex flex-column p-3 h-100">
+                <h6 class="text-hightBule">数据对比</h6> 
+                <form>
+                    <div class="pt-3 pl-2 form-row">
+                        <label class="text-light mb-0 pt-1" style="width: 80px">对比时长：</label>
+                        <div class="col-2 ml-2">
+                            <select id="dateRange" onchange="onChangeRange()" class="form-control btn-outline-info bg-black">
+                                <option value="0" selected>日</option>
+                                <option value="1">周</option>
+                                <option value="2">月</option>
+                            </select>  
+                        </div>
+                    </div>
+                </form>
+                <form>
+                    <div class="form-row pt-2 pl-2">
+                        <label for="name" class="text-light mb-0 pt-1" style="width: 80px">对比类型：</label>
+                        <select id="sensorType" onchange="selectedSenType()" class="col-2 ml-2 form-control btn-outline-info bg-black">
+                            <option value="0" style="display: none">请先选择传感器类型</option>
+                        </select>
+                        <select id="sensorName" onchange="selectedSenSor()" class="col-2 ml-2 form-control btn-outline-info bg-black">
+                            <option value="0" style="display: none">请选择采集点</option>
+                        </select>
+                        <input type="text" autocomplete="off" class="col-2 ml-2 form-control btn-outline-info bg-black" style="display:none" placeholder="月时间范围" id="month">
+                        <input type="text" autocomplete="off" class="col-2 ml-2 form-control btn-outline-info bg-black" placeholder="日时间范围1" id="day1">
+                        <input type="text" autocomplete="off" class="col-2 ml-2 form-control btn-outline-info bg-black" placeholder="日时间范围2" id="day2">
+                        <input type="text" autocomplete="off" class="col-2 ml-2 form-control btn-outline-info bg-black" placeholder="周时间范围1" style="display:none" id="week1">
+                        <input type="text" autocomplete="off" class="col-2 ml-2 form-control btn-outline-info bg-black" placeholder="周时间范围2" style="display:none" id="week2">
+                        <button type="button" id="search" disabled class="ml-2 btn btn-info" onclick="onSearch()" style="width: 100px">点击对比</button>
+                        
+                    </div>
+                </form>
+                <div class="pt-2 position-relative" style="flex: 1">
+                    <div id="dataEchart" class="w-100 h-100"></div>
+                    <div id="loading" class="position-absolute text-center" style="display: none">
+                        <span class="spinner-border text-primary" role="status">
+                        </span>
+                        <div class="text-primary">Loading...</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <script>
+        let sencode,startTime, endTime,option, pmId = 4;
+        let api = '/data/selectDataContrsktDay', params = {};
+        let selectedTimeVal = 0;
+        function getSensorType() {
+            parent.getData('get', '/data/selectAllSensorType', {pmId} ).then((res) => {
+                let html = '';
+                res.forEach(item => {
+                    html += `<option value="${item.sp_code}">${item.sp_name}</option>`
+                })
+                $('#sensorType').append(html);
+            })
+        }
+        function selectedSenType() {
+            let spCode = $('#sensorType option:selected').val();
+            parent.getData('get', '/data/selectAllSensorDatasBySentype', {spCode, pmId} ).then((res) => {
+                let html = '';
+                res.forEach((item, i) => {
+                    html += i==0?`<option selected value="${item.sen_code}">${item.sen_name}</option>`:`<option value="${item.sen_code}">${item.sen_name}</option>`
+                })
+                $('#sensorName').html(html);
+                sencode = $('#sensorName option:selected').val();
+                checkSelectedAll();
+            })
+        }
+        function selectedSenSor() {
+            sencode = $('#sensorName option:selected').val();
+            checkSelectedAll();
+        }
+        //footer图表
+        function dataEcharts(data) {
+            option = {
+                title:{
+                    text: '不同时间段同一监测点的数据对比',
+                    left: 'center',
+                    textStyle: {color: '#00F6FF'}
+                },
+                color: ['#52FFFF','#FFAE00','#e36159','#00ff7f','#bc1717',
+                '#0088cc','#ff7f00','#db7093','#b87333',
+                '#ff2400','#215e21','#ff00ff','#99cc32',
+                '#23238e','#5340cc'],
+                dataZoom: [{
+                    type: 'slider',
+                    xAxisIndex: 0,
+                    filterMode: 'none',
+                    textStyle: {color: '#37D9FC'},
+                    fillerColor: 'rgba(13,51,88, 0.8)',
+                    borderColor: 'rgba(90, 239, 249, .3)'
+                },
+                {
+                    type: 'slider',
+                    yAxisIndex: 0,
+                    filterMode: 'none',
+                    textStyle: {color: '#37D9FC'},
+                    fillerColor: 'rgba(13,51,88, 0.8)',
+                    borderColor: 'rgba(90, 239, 249, .3)'
+                },
+                {
+                    type: 'inside',
+                    xAxisIndex: 0,
+                    filterMode: 'none'
+                },
+                {
+                    type: 'inside',
+                    yAxisIndex: 0,
+                    filterMode: 'none'
+                }],
+                tooltip: {
+                    trigger: "axis",
+                },
+                axisPointer: {
+                    link: {xAxisIndex: 'all'}
+                },
+                textStyle:{
+                    color: '#fff'
+                },
+                legend: {
+                    data: [],
+                    x: 'center',
+                    y: 30,
+                    textStyle: {
+                        color: "#fff" //刻度颜色
+                    }
+                },
+                toolbox: {
+                    iconStyle: {
+                        borderColor: '#e36159',
+                    },
+                    y: 0
+                },
+                grid: {},
+                xAxis: {},
+                yAxis: {},
+                series: []
+            }//ecahrt图表对象
+            let common = {
+                boundaryGap: false,
+                axisLabel: {
+                    textStyle: {
+                    color: "#fff" //刻度颜色
+                    }
+                },
+                axisTick: {
+                    show: false
+                },
+                axisLine: {
+                    lineStyle: {
+                        color: 'rgba(82,255,255,.16)'
+                    }
+                },
+                splitLine: {
+                    show: true,
+                    lineStyle: {
+                        color: 'rgba(82,255,255,.16)'
+                    }
+                }
+            }
+            let obj1 = {
+                grid: {
+                    top: 85,
+                    left: 55,
+                    right: 50,
+                    bottom: 50
+                },
+                xAxis: {
+                    //x轴
+                    type: "category",
+                    name: '(时)',
+                    data: ['00时','01时','02时','03时','04时','05时','06时','07时','08时','09时','10时','12时'],
+                    boundaryGap: false,
+                },
+                yAxis: {
+                    //y轴
+                    type: "value",
+                    name: "",
+                    // min: 'dataMin',
+                    // scale: true,
+                    axisTick: {
+                        show: false
+                    }
+                }
+            }
+            Object.assign(obj1.xAxis, common);
+            Object.assign(obj1.yAxis, common);
+            let obj2 = {
+                grid: [{
+                    top: 50,
+                    left: 50,
+                    right: 50,
+                    height: '35%'
+                }, {
+                    left: 50,
+                    right: 50,
+                    top: '55%',
+                    height: '35%'
+                }],
+                xAxis: [{
+                    //x轴
+                    type: "category",
+                    name: '(时)',
+                    data: [],
+                    boundaryGap: false,
+                },{
+                    //x轴
+                    gridIndex: 1,
+                    type: "category",
+                    name: '(时)',
+                    data: [],
+                    boundaryGap: false,
+                    position: 'top'
+                }],
+                yAxis:[{
+                    //y1轴
+                    type: "value",
+                    name: "",
+                    axisTick: {
+                        show: false
+                    }
+                },{
+                    //y2轴
+                    gridIndex: 1,
+                    type: "value",
+                    name: "",
+                    inverse: true,
+                    axisTick: {
+                        show: false
+                    }
+                }]
+            }
+            Object.assign(obj2.xAxis[0], common);
+            Object.assign(obj2.xAxis[1], common);
+            Object.assign(obj2.yAxis[0], common);
+            Object.assign(obj2.yAxis[1], common);
+            obj1.xAxis.data = [];
+            obj2.xAxis[0].data = [];
+            obj2.xAxis[1].data = [];
+            obj2.yAxis[0].data = [];
+            obj2.yAxis[1].data = [];
+            if(!!data) {
+                
+                for(let key in data){
+                    var serie = [];
+                    let time = key==0?startTime:endTime;
+                    let lineNumber = data[key][0].sp_vnum;
+                    let unit = data[key][0].sp_columns.split('||');
+                    for(let i=0; i < lineNumber; i++) {
+                        let name = unit[i]+'('+time+')';
+                        option.legend.data.push(name);
+                        serie[i] = {name: name,type: 'line',data: []};
+                    }
+                    data[key].forEach((item, i) => {
+                        for(let i=0; i < lineNumber; i++) {
+                            serie[i].data.push(item['da_v'+ (i+1)]);
+                        }
+                        if(key == 1) {
+                            switch(selectedTimeVal) {
+                                case 0: 
+                                    option.xAxis = obj1.xAxis;
+                                    option.yAxis = obj1.yAxis;
+                                    option.grid = obj1.grid;
+                                    option.xAxis.data.push(item.da_unixtime.substring(11)+'时');
+                                    break;
+                                case 1: 
+                                    option.xAxis = obj2.xAxis;
+                                    option.yAxis = obj2.yAxis
+                                    option.grid = obj2.grid;
+                                    for(let i=0; i < lineNumber; i++) {
+                                        Object.assign(serie[i], {xAxisIndex: 1, yAxisIndex: 1});
+                                    }
+                                    option.dataZoom[0].xAxisIndex = [0, 1];
+                                    option.dataZoom[1].xAxisIndex = [0, 1];
+                                    if(!!data[0][i] ) {
+                                        option.xAxis[0].data.push(data[0][i].da_unixtime.substring(5, 10)+'日('+data[0][i].da_unixtime.substring(10, 13)+'点)');
+                                    }
+                                    if(!!data[0][i]) {
+                                        option.xAxis[1].data.push(data[1][i].da_unixtime.substring(5, 10)+'日('+data[0][i].da_unixtime.substring(10, 13)+'点)');  
+                                    }
+                                    break;
+                                case 2: 
+                                    option.xAxis = obj1.xAxis;
+                                    option.yAxis = obj1.yAxis
+                                    option.grid = obj1.grid;
+                                    option.xAxis.data.push(item.da_unixtime.substring(8, 10)+'日');
+                                    break;
+                            }
+                            
+                        }
+                    })
+                    option.series = option.series.concat(serie);
+                }
+                if(selectedTimeVal == 1) {
+                    option.yAxis[0].name = data[0][0].sp_columns+'('+data[0][0].sp_unit+')'; 
+                    option.yAxis[1].name = data[1][0].sp_columns+'('+data[1][0].sp_unit+')'; 
+                }else{
+                    option.yAxis.name = data[0][0].sp_columns+'('+data[0][0].sp_unit+')';
+                }
+                
+            }
+            let echartView = parent.echarts.init(document.querySelector('#dataEchart'));
+            echartView.setOption(option, true);
+            $(window).resize(() => {
+                echartView.resize();      
+            })
+        }
+        function onChangeRange() {
+            startTime = endTime = '';
+            $('#search').attr("disabled", true);
+            selectedTimeVal = Number($("#dateRange option:selected").val());
+            $("#day1").val('');$("#day2").val('');
+            $("#week1").val('');$("#week2").val('');
+            $("#month").val('');
+            switch(selectedTimeVal) {
+                case 0: api = '/data/selectDataContrsktDay';
+                        $("#day1").fadeIn('150');$("#day2").fadeIn('150');
+                        $("#week1").fadeOut('50');$("#week2").fadeOut('50');
+                        $("#month").fadeOut('50');
+                    break;
+                case 1: api = '/data/selectDataContrsktWeek';
+                        $("#day1").fadeOut('50');$("#day2").fadeOut('50');
+                        $("#week1").fadeIn('150');$("#week2").fadeIn('150');
+                        $("#month").fadeOut('50');
+                    break;
+                case 2: api = '/data/selectDataContrsktMonth';
+                        $("#day1").fadeOut('50');$("#day2").fadeOut('50');
+                        $("#week1").fadeOut('50');$("#week2").fadeOut('50');
+                        $("#month").fadeIn('150');
+                    break;
+            }
+        }
+        function initTime() {
+            laydate.render({
+                elem: '#day1',
+                theme: '#17a2b8',
+                format: 'yyyy-MM-dd',
+                max: new Date().getTime(),
+                done: function(value, date, endDate){
+                    startTime = value;
+                    checkSelectedAll(event, value);
+                }
+            });
+            laydate.render({
+                elem: '#day2',
+                theme: '#17a2b8',
+                format: 'yyyy-MM-dd',
+                max: new Date().getTime(),
+                done: function(value, date, endDate){
+                    endTime = value;
+                    checkSelectedAll(event, value);
+                }
+            });
+            laydate.render({
+                elem: '#week1',
+                theme: '#17a2b8',
+                format: 'yyyy-MM-dd至yyyy-MM-dd',
+                max: new Date().getTime(),
+                done: function(value, date, endDate){
+                    startTime = value.substring(0, 10);
+                    checkSelectedAll(event, value);
+                    $("#week1").val(startTime + '至'+ getNextWeek(startTime));
+                }
+            });
+            laydate.render({
+                elem: '#week2',
+                theme: '#17a2b8',
+                format: 'yyyy-MM-dd至yyyy-MM-dd',
+                max: new Date().getTime(),
+                done: function(value, date, endDate){
+                    endTime = value.substring(0, 10);
+                    checkSelectedAll(event, value);
+                    $("#week2").val(endTime + '至'+ getNextWeek(endTime));
+                }
+            });
+            laydate.render({
+                elem: '#month',
+                theme: '#17a2b8',
+                type: 'month',
+                range: true,
+                format: 'yyyy-MM',
+                max: new Date().getTime(),
+                done: function(value, date, endDate){
+                    startTime = value.substring(0, 7);
+                    endTime = value.substring(value.length-7, value.length);
+                    checkSelectedAll(event);
+                }
+            });
+        }
+        function onSearch() {
+            $("#loading").fadeIn();
+            parent.getData('get', api, params ).then((res) => {
+                dataEcharts(res);
+                $("#loading").fadeOut();
+            })
+        }
+        function checkSelectedAll(e, time) {
+            if(!!sencode&&!!startTime&&!!endTime) {
+                $('#search').removeAttr("disabled");
+            }
+            switch(selectedTimeVal) {
+                case 0: params = {daytimeone: startTime, daytimetwo: endTime}; 
+                    break;
+                case 1: params = {weektimebeginone: startTime, weektimeendone: getNextWeek(startTime),
+                        weektimebegintwo: endTime, weektimeendtwo: getNextWeek(endTime)};
+                    break;
+                case 2: params = {monthtimeone: startTime, monthtimetwo: endTime};
+                    break;
+            }
+            params = Object.assign({pmId: 4, sencode},params);
+        }
+        function getNextWeek(nextDay) {
+            var dd = new Date(nextDay);
+            dd.setDate(dd.getDate() + 7);
+            var y = dd.getFullYear();
+            var mon = dd.getMonth() + 1; //获取当前月份的日期
+            var d = dd.getDate();
+            if (mon < 10) {
+                mon = "0" + mon
+            }
+            if (d < 10) {
+                d = "0" + d
+            }
+            return y + "-" + mon + "-" + d;
+        };
+        function init() {
+            getSensorType(); 
+            initTime();
+            dataEcharts();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no shrink-to-fit=no">
+    <title>中南大学体育馆主馆-桁架智能监测平台</title>
+    <link rel="shortcut icon" href="./image/icon.png" type="image/x-icon">
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/sideBar.css">
+    <link rel="stylesheet" href="./font/iconfont.css">
+    <link rel="stylesheet" href="./css/common.css">
+
+    <script type="text/javascript" src="./lib/three.min.js"></script>
+    <script type="text/javascript" src="./lib/MTLLoader.js"></script>
+    <script type="text/javascript" src="./lib/OBJLoader.js"></script>
+
+    <script type="text/javascript" src="./lib/tween.umd.js"></script>
+
+    <script type="text/javascript" src="./lib/jquery.min.js"></script>
+    <script type="text/javascript" src="./lib/bootstrap.min.js"></script>
+    <script type="text/javascript" src="./lib/echarts.min.js"></script>
+    <script type="text/javascript" src="./lib/cookies.js"></script>
+    <script type="text/javascript" src="./js/canvasView.js"></script>
+    <script type="text/javascript" src="./js/baseUrl.js"></script>
+    <script type="text/javascript" src="./js/loadModel.js"></script>
+    <script type="text/javascript" src="./js/sideBar.js"></script>
+    <style>
+        .avtive {
+            background-color: #eee;
+            color: #37D9FC;
+        }
+
+        a:hover {
+            text-decoration: none;
+        }
+
+        #headerNav {
+            flex: 1;
+            position: absolute;
+            left: 50%;
+            top: 0;
+            z-index: 999;
+            bottom: 5px;
+            width: 100vw;
+            height: 72px;
+            transform: translateX(-50%);
+            background: url('./image/headerBox.png') no-repeat;
+            background-size: 125% 150%;
+            background-position: 50% -38px;
+        }
+        #headerNav .navbar {
+            width: 100vw;
+            height: 72px;
+        }
+        .content {
+            padding-left: 262px;
+            padding-top: 72px;
+            box-sizing: border-box;
+        }
+
+        #navLeft .animate-menu {
+            padding-top: 72px;
+            z-index: 100;
+        }
+
+        .navRigth {
+            width: 262px;
+            height: 100vh;
+            position: fixed;
+            right: 0;
+            top: 0;
+            z-index: 20;
+        }
+
+        .navbottom {
+            height: 72px;
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            z-index: 20
+        }
+        .userInfo {
+            cursor: pointer;
+        }
+        .userInfo:hover #userOption{
+            transform: scale(1);
+            top: 55px;
+            transition: all 0.4s ease;
+        }
+        #userOption {
+            width: 100%;
+            min-width: 130px;
+            top: -10px;
+            left: 0;
+            transform: scale(0);
+        }
+        #userOption li:hover {
+            background: rgb(23,91,128); 
+        }
+        #openFull:hover {
+            transform: scale(1.2);
+        }
+        @media screen and (max-width: 990px) {
+            #headerNav div:nth-child(1),
+            #headerNav div:nth-child(3) {
+                display: none !important;
+            }
+            #navLeft .animate-menu {
+                top: -100vh;
+            }
+            .navRigth,
+            .navbottom {
+                display: none;
+            }
+            .menuBtn {
+                display: block !important;
+            }
+            .content {
+                padding-left: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid vh-100 bg-black p-0">
+        <div id="headerNav" class="fixed-top navbar-dark bg-secondBlack">
+            <nav class="navbar navbar-expand-lg row d-flex p-3 m-0">
+                <div class="pull-left col-0 col-lg-3">
+                    <img src="./image/logo.png" width="60" height="40" class="d-inline-block align-top">
+                </div>
+                <div class="hederTitle col-12 col-lg-6 offset-md-0">
+                    <h4 class="text-center col-sm-12 mx-auto web-font text-bule ellipsis">中南大学体育馆主馆钢桁架在线监测数据平台</h4>
+                </div>
+                <div id="user" class="text-right d-flex justify-content-end align-items-center col-0 col-lg-3">
+                    <div class="d-flex align-items-center userInfo position-relative">
+                        <img src="./image/userIcon.svg" width="30" height="30" class="d-inline-block align-top">
+                        <h6 id="userName" class="text-bule p-3 pt-4">用户名</h6>
+                        <ul id="userOption" class="position-absolute text-light bg-gradients shadow-lg">
+                            <li class="text-left p-3" onclick="onLogout()">
+                                <svg width="1.3em" height="1.3em" viewBox="0 0 16 16" class="bi bi-power" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M5.578 4.437a5 5 0 1 0 4.922.044l.5-.866a6 6 0 1 1-5.908-.053l.486.875z"/>
+                                    <path fill-rule="evenodd" d="M7.5 8V1h1v7h-1z"/>
+                                </svg>
+                                <span class="ml-2">退出登录</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="text-light border-right mr-3" style="width: 3px; height: 25px"></div>
+                    <a id="openFull" class="navbar-brand" href="###" onclick="handleFullScreen()">
+                        <img src="./image/open-full.png" width="22" height="22" alt=""/>
+                    </a>
+                </div>
+                <button class="position-fixed menuBtn bg-info border p-1" style="min-width: 30px;display: none;right: 10px;" type="button">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </nav>  
+        </div>
+        
+        <div id="navLeft">
+            <section class="animate-menu">
+                <ul class="sidebar-menu vh-100 bg-secondBlack" style="width: 262px">
+                    <li class="active">
+                        <a class="align-middle noNext pr-4 pl-4" data-href="./page/index.html">
+                            <img src="./image/home.png" alt="" srcset="">
+                            <span class="ml-3">首页</span> 
+                        </a>
+                    </li>
+                    <li>
+                        <a class="pl-4 pr-4" href="#">
+                            <img src="./image/charge.png" alt="" class="s">
+                            <span class="ml-3">实时监测</span>
+                            <img src="./image/lowMark.svg" width="15" height="20" class="float-right lowMark"></img>
+                        </a>
+                        <ul class="sidebar-submenu bg-secondLiver" style="display: none;">
+                            <li class="p-1 pl-4"><a class="pl-5" data-href="./page/defMonitor.html">挠度监测</a></li>
+                            <li class="p-1 pl-4"><a class="pl-5" data-href="./page/stressMonitor.html">应力监测</a></li>
+                            <li class="p-1 pl-4"><a class="pl-5" data-href="./page/shiftMonitor.html">位移监测</a></li>
+                            <li class="p-1 pl-4"><a class="pl-5" data-href="./page/speedMonitor.html">震动监测</a></li>
+                            <li class="p-1 pl-4"><a class="pl-5" data-href="./page/leanMonitor.html">倾斜监测</a></li>
+                            <!-- <li class="p-1 pl-4"><a class="pl-5" data-href="./page/temMonitor.html">温度监测</a> -->
+                        </ul>
+                        </li>
+                        <!-- <li>
+                            <a class="pl-4 pr-4 noNext" data-href="./page/workInfo.html">
+                                <img src="./image/info.png" alt="" srcset="">
+                                <span class="ml-3">工程信息</span>
+                            </a>
+                        </li> -->
+                        <li>
+                            <a class="pl-4 pr-4" href="###">
+                            <img src="./image/data.png" width="20px" height="20px" alt="" class="s">
+                            <span class="ml-3">数据管理</span>
+                            <img src="./image/lowMark.svg" width="15" height="20" class="float-right lowMark"></img>
+                        </a>
+                            <ul class="sidebar-submenu bg-secondLiver" style="display: none;">
+                                <li class="p-1 pl-4"><a class="pl-5" data-href="./page/dataCompare.html">数据对比</a></li>
+                                <li class="p-1 pl-4"><a class="pl-5" data-href="./page/dataLink.html">数据关联</a></li>
+                                <li class="p-1 pl-4"><a class="pl-5" data-href="./page/reportManager.html">报表管理</a></li>
+                            </ul>
+                        </li>
+                </ul>
+                <!-- <div class="position-absolute fixed-bottom mb-5">
+                    <a class="pl-4 pr-4 noNext" href="###">
+                        <img src="./image/makeNote.png" alt="" srcset="">
+                        <span class="ml-3 text-light">操作指南</span>
+                    </a>
+                </div> -->
+            </section>
+        </div>
+        <div class="content bg-secondBlack w-100 vh-100">
+            <div class="block-center bg-black w-100 h-100 m-0">
+                <h6 class="text-bule w-100 block-center text-center">加载中...</h6>
+                <div class="progress block-center mt-4" style="width: 150px">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%" aria-valuenow="100"
+                        aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+            <div class="navbottom bg-secondBlack w-100"></div>
+            <div class="navRigth bg-secondBlack"></div>
+            <iframe src="" id="iframe" frameborder="0" class="position-relative w-100 h-100" style="z-index: 99"></iframe>
+        </div>
+    </div>
+    <script>
+        let fullscreen = false;
+        let user = window.location.search.substring(1);
+        if(!!user) {
+            let userInfo = user.substring(user.indexOf('=')+1).split(',');
+            sessionStorage.setItem("userAccount", userInfo[0])
+        }
+        $('#iframe').attr('src', './page/index.html')
+        if(!sessionStorage.getItem("userAccount")) {
+           location.href = './login.html';
+        }else{
+            $('#userName').text(sessionStorage.getItem("userAccount"));
+        }
+        function onLogout() {
+            sessionStorage.clear();
+            Cookies.set("checked", '', {
+                    expires: -1
+                }); // 删除 cookie
+            Cookies.set("userAccount", '', {
+                expires: -1
+            });
+            Cookies.set("userpassword", '', {
+                expires: -1
+            });
+            location.href = "./login.html";
+        }
+        function handleFullScreen() {
+            let element = document.documentElement;
+            if(fullscreen) {
+                fullscreen = false;
+                $('#openFull img').attr('src', './image/open-full.png');
+                if(document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if(document.webkitCancelFullScreen) {
+                    document.webkitCancelFullScreen();
+                } else if(document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if(document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+            } else {
+                fullscreen = true;
+                $('#openFull img').attr('src', './image/close-full.png');
+                if(element.requestFullscreen) {
+                    element.requestFullscreen();
+                } else if(element.webkitRequestFullScreen) {
+                    element.webkitRequestFullScreen();
+                } else if(element.mozRequestFullScreen) {
+                    element.mozRequestFullScreen();
+                } else if(element.msRequestFullscreen) {
+                    // IE11
+                    element.msRequestFullscreen();
+                }
+            }
+        }
+    </script>   
+</body>
+</html>

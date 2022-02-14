@@ -1,0 +1,442 @@
+<!DOCTYPE>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>首页</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/common.css">
+
+    <script type="text/javascript">let THREE = parent.THREE;</script>
+    <script type="text/javascript" src="../lib/OrbitControls.js"></script>
+    <script type="text/javascript" src="../lib/stats.js"></script>
+
+    <script type="text/javascript" src="../lib/CopyShader.js"></script>
+    <script type="text/javascript" src="../lib/EffectComposer.js"></script>
+    <script type="text/javascript" src="../lib/RenderPass.js"></script>
+    <script type="text/javascript" src="../lib/ShaderPass.js"></script>
+    <script type="text/javascript" src="../lib/OutlinePass.js"></script>
+    <script type="text/javascript" src="../lib/SMAAShader.js"></script>
+    <script type="text/javascript" src="../lib/SMAAPass.js"></script>
+    <script type="text/javascript" src="../lib/LuminosityHighPassShader.js"></script>
+    <script type="text/javascript" src="../lib/UnrealBloomPass.js"></script>
+    <script type="text/javascript" src="../lib/onEvent.js"></script>
+
+    <script type="text/javascript" src="../lib/jquery.min.js"></script>
+    <script type="text/javascript" src="../lib/bootstrap.min.js"></script>
+    <style>
+        .footBg {
+            background: url('../image/bg-img.png') no-repeat;
+            background-size: 100% 100%;
+        }
+        .pageRight .content1 {
+            background: url('../image/bg-img1.png') no-repeat;
+            background-size: 100% 100%;
+        }
+        .pageRight .content2 {
+            background: url('../image/bg-img2.png') no-repeat;
+            background-size: 100% 100%;
+        }
+        .pageRight .content3{
+            background: url('../image/bg-img1.png') no-repeat;
+            background-size: 100% 100%;
+            overflow: auto;
+        }
+        #projectInfo {
+            pointer-events: none;
+            top: 50%;
+            transform: translateY(calc(-50% + 30px));
+            left: 0;
+        }
+        #projectInfo img {
+            width: 25px;
+            height: 25px;
+        }
+    </style>
+</head>
+<body onload="init()">
+    <div class="container-fluid bg-black vh-100 p-0">
+        <section id="threeModelView" class="fixed-top col-6 col-sm-6 col-md-7 col-lg-9 vh-100 p-0" >
+        </section>
+        <section id="data" class="position-fixed bg-black col-6 col-sm-6 col-md-5 col-lg-3 p-0" style="right: 0">
+            <div class="pageRight pl-2 pr-2" style="min-width: 280px">
+                <ul class="d-flex flex-column justify-content-around text-light vh-100">
+                    <li class="h-25 pt-2 pb-0">
+                        <div class="content1 h-100 pl-3 pr-3 pb-3 pt-2 text-bule flex-column d-flex justify-content-around">
+                            <h6 class="text-hightBule">环境因素</h6>
+                            <div class="d-flex flex-column justify-content-around" style="flex: 1">
+                                <div>
+                                    <ul class="topInfo border-bottom border-info d-flex justify-content-between p-2 mr-4 ml-4">
+                                        <li class="d-flex"><h3 clss="p-0" id="tmp">···</h3><span class="pt-2 pl-2">摄氏度℃</span></li>
+                                        <li class="d-flex align-items-center">
+                                            <img src="../image/colud.png" width="30" height="25" >
+                                            <span class="pt-2 pl-2" id="cond_txt">···</span>
+                                        </li>
+                                    </ul>
+                                    <ul class="bottomInfo d-flex justify-content-between p-3">
+                                        <li class="d-flex">
+                                            <img src="../image/water.png" class="m-1 pr-1" width="20" height="25" alt="" srcset="">
+                                            <div class="d-flex flex-column">
+                                                <h6 class="mb-0">湿度</h6>
+                                                <span id="hum">···</span>
+                                            </div>
+                                        </li>
+                                        <li class="d-flex">
+                                            <img src="../image/water.png" class="m-1 pr-1" width="20" height="25" alt="" srcset="">
+                                            <div class="d-flex flex-column">
+                                                <h6 class="mb-0">降雨量</h6>
+                                                <span id="pcpn">···</span>
+                                            </div>
+                                        </li>
+                                        <li class="d-flex">
+                                            <img src="../image/wind.png" class="m-1 pr-1" width="25" height="25" alt="" srcset="">
+                                            <div class="d-flex flex-column">
+                                                <h6 class="mb-0">风速</h6>
+                                                <span id="wind_spd">···</span>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="h-50 pt-2 pb-0" style="flex: 1">
+                        <div class="content2 h-100 pl-3 pr-3 pb-3 pt-2 d-flex justify-content-center flex-column">
+                            <div class="d-flex flex-column" style="line-height: 30px">
+                                <h6 class="text-hightBule">预警信息</h6>
+                            </div>
+                            <div id="warnMsg" class="d-flex flex-column justify-content-start overflow-auto" style="flex: 1; cursor: pointer">
+                                <p class="text-danger text-center p-4"></p>
+                                <table class="table table-sm table-borderless table-striped bg-warning">
+                                    <!-- js预警 -->
+                                </table>
+                            </div>
+                        </div>
+                    </li> 
+                    <li class="pt-2 pb-2">
+                        <div class="content3 pl-3 pr-3 pb-3 pt-2 d-flex flex-column" style="height: 180px">
+                            <h6 class="text-hightBule">人员信息</h6>
+                            <div class="w-100 d-flex justify-content-around align-items-center" style="flex:1">
+                                <table class="table table-sm table-borderless table-striped mb-0">
+                                    <thead>
+                                        <tr class="text-bule bg-liver text-center">
+                                            <th scope="col"><h5 class="mb-0">姓名</h5></th>
+                                            <th scope="col"><h5 class="mb-0">职务</h5></th>
+                                            <th scope="col"><h5 class="mb-0">联系电话</h5></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="text-light">
+                                        <tr class="bg-secondLiver text-center">
+                                            <td><h6 class="mb-0">邓振旸</h6></td>
+                                            <td><h6 class="mb-0">平台管理员</h6></td>
+                                            <td><h6 class="mb-0">17018022285</h6></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </section>
+        <footer class="fixed-bottom bg-black col-6 col-sm-6 col-md-7 col-lg-9 pt-2 pb-2 pl-2 pr-0">
+            <div class="jumbotron bg-black p-0 m-0 text-light">
+                <div class="position-relative footBg w-100" style="height: 180px;">
+                    <h6 class="position-absolute text-hightBule p-2">仪表盘<small class="ml-2">(在线/预警/离线/总数)</small></h6>
+                    <ul style="width: 100%; height: 140px; z-index: 2" class="pt-2 position-absolute">
+                        <li id="circleEchart" class="h-100" style="width: 100%;"></li>
+                    </ul>
+                    <ul id="projectInfo" class="position-absolute d-flex w-100">
+                       <!-- js -->
+                    </ul>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <script>
+        let isOuterLink = sessionStorage.getItem('outerLink')
+        let camera, scene, renderer, controls, stats, composer, outLineColor;
+        let allMonitorType = [
+            {name: '挠度' ,spCode:90, img: '../image/naodu.png'},
+            {name: '应力',spCode: 101, img: '../image/speed.png'},
+            {name: '位移',spCode: 7, img: '../image/shift.png'},
+            {name: '震动',spCode:62, img: '../image/quake.png'},
+            {name: '倾斜',spCode: 61, img: '../image/lean.png'},
+            
+            // {name: '温度',spCode:null, img: '../image/tem.png'}
+        ];
+        let threeView = $('#threeModelView');
+        let echartView = parent.echarts.init(document.querySelector('#circleEchart'));
+        //3D场景初始化
+        function initScene() {
+            camera = new THREE.PerspectiveCamera( 75, threeView.width() / threeView.height(), 1, 20000 );
+            // camera.position.set( -230, 150, 0 ); 
+            camera.position.set( 50, 150, -350 ); 
+            // camera.lookAt(0,0,0);
+            scene = new THREE.Scene();
+            THREE.onEvent(scene, camera,threeView.width(), threeView.height());//事件初始化
+            // 给场景添加一个环境光
+            let ambientLight = new THREE.AmbientLight( 0x404040);
+            scene.add( ambientLight );
+            // 给场景添加一个平行光出来
+            let dirLight = new THREE.DirectionalLight( 0xffffff, 1.5);
+            //  dirLight.color.setHSL( 0.1, 1, 0.95 );
+            dirLight.position.set( 1, 1.75, 1 );
+            dirLight.position.multiplyScalar( 30 );
+            scene.add( dirLight );
+            //实例化一个渲染器s
+            renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
+            renderer.setPixelRatio( window.devicePixelRatio );
+            renderer.setSize( threeView.width(), threeView.height());
+            // renderer.setClearColor( 0xffffff, 0.1);   
+            threeView.append( renderer.domElement );
+            //控制相机
+            controls = new THREE.OrbitControls( camera, renderer.domElement);
+            controls.minPolarAngle =0;
+            controls.maxPolarAngle =Math.PI/2.1;
+            //设置相机移动距离
+            controls.minDistance = 100;
+            controls.maxDistance = 800;
+            // 使动画循环使用时阻尼或自转 意思是否有惯性
+            controls.enableDamping = true;
+            //动态阻尼系数 就是鼠标拖拽旋转灵敏度
+            controls.dampingFactor = 0.6;
+            window.addEventListener( 'resize', onWindowResize, false );
+            composerPass(renderer);
+        }
+        //后期通道
+        function composerPass(renderer) {
+            composer = new THREE.EffectComposer(renderer);//通道组合器
+            var renderPass = new THREE.RenderPass( scene, camera );//渲染一个新环境
+            // 外边框outLine
+            outLineColor = new THREE.OutlinePass( 
+                new THREE.Vector2( threeView.width(), threeView.height() ), scene, camera);
+            outLineColor.visibleEdgeColor.set( '#fff' );
+            outLineColor.edgeStrength = 8;
+            //场景发光
+            var bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2( threeView.width(), threeView.height() ))
+            bloomPass.exposure =1;
+            bloomPass.threshold = 0;
+            bloomPass.strength = .5;
+            bloomPass.radius = 1;
+            bloomPass.enabled  = false;
+            //抗锯齿SMAAShader
+            var SMAAShader= new THREE.SMAAPass( threeView.width(),  threeView.height() );
+            SMAAShader.renderToScreen = true;
+
+            composer.addPass( renderPass );
+            composer.addPass( bloomPass );
+            composer.addPass(outLineColor);
+            composer.addPass( SMAAShader );
+
+        }
+        //屏幕宽度监听
+        function onWindowResize() {
+            camera.aspect = threeView.width() /threeView.height();
+            camera.updateProjectionMatrix();
+            renderer.setSize( threeView.width(),threeView.height() );
+            composer.setSize( threeView.width(),threeView.height() );
+            THREE.onEvent(scene, camera,threeView.width(), threeView.height());//事件初始化
+        }
+        function getProInfo() {
+            allMonitorType.forEach( (item, i) => {
+                let temp = {};
+                if(item.spCode !== null) {
+                    parent.getData("get", "/echart/getSensorCountByPmId/4/"+item.spCode, {}).then((res) => {
+                        temp = {...allMonitorType[i],...res.data};
+                        allMonitorType[i] = temp;
+                        circleEcharts(allMonitorType);
+                    })
+                }else{
+                    temp = {...allMonitorType[i]};
+                    allMonitorType[i] = temp; 
+                }
+            })
+        }
+        //初始化性能插件
+        function initStats() {
+            stats = new Stats();
+            document.body.appendChild(stats.dom);
+        }
+        function changeFrameColor() {
+            parent.objArr.forEach( (item, i) => {
+                if(i==2||i==5||i==12) {
+                    item.traverse( child =>{
+                        if(child.type == 'Mesh') {
+                            child.material.transparent = false;
+                            child.material.opacity == 1;
+                            child.material.color.set('#fff');
+                        }
+                    })
+                }
+            })
+        }
+        //渲染
+        function animate() {
+            //更新性能插件
+            // stats.update(); 
+            controls.update();
+            // renderer.render(scene, camera);
+            parent.TWEEN.update();
+            composer.render();
+            composer.autoClear = false; 
+            requestAnimationFrame(animate);
+        }
+        //footer图表
+        function circleEcharts(data) {
+            // let data = [{},{},{},{},{}];
+            var option = {
+                color: ['#52FFFF','#FFAE00','#F53F8C'],
+                backgroundColor:'rgba(225,225,225,0)',
+                legend: {
+                    top: -15,
+                    right: 10,
+                    data: ['',
+                    {name:'在线',textStyle:{color:'#52FFFF'}}, 
+                    {name:'预警',textStyle:{color:'#FFAE00'}},
+                    {name:'离线',textStyle:{color:'#F53F8C'}}]
+                },
+                series: []
+            }
+            let html = '';
+            data.forEach((item, i) => {
+                let serie = {
+                    name: '',
+                    startAngle: -45,
+                    type: 'pie',
+                    radius: ['55%', '75%'],
+                    center: ['75%', '50%'],
+                    label: {
+                        show: false
+                    },
+                    emphasis: {
+                        label: {
+                            show: true,
+                            formatter: '{b|{b}：}{c}个',
+                            backgroundColor: 'rgba(225,225,225, .5)',
+                            borderColor: '#aaa',
+                            borderWidth: 1,
+                            borderRadius: 4,
+                            padding: [4, 2],
+                            rich: {
+                                c: {
+                                    fontSize: 12,  
+                                },
+                                b: {
+                                    fontSize: 12,
+                                    lineHeight: 18,
+                                }
+                            }
+                        },
+                    },
+                    data: [
+                        {value: 25, name: '', itemStyle: {
+                            normal: {
+                                color: "rgba(80,150,224,0)"
+                            }
+                        }},
+                        {value: 25, name: '在线'},
+                        {value: 25, name: '预警'},
+                        {value: 25, name: '离线'}
+                    ]
+                };
+                if(!!item.zongShu) {
+                    serie.data = [{value: item.zongShu/3, name: '', itemStyle: {normal: {color: "rgba(80,150,224,0)"}}},
+                        {value: item.zaiXianCount, name: '在线'},
+                        {value: item.yuJing, name: '预警'},
+                        {value: item.liXianCount, name: '离线'}
+                    ];
+                }else{
+                    serie.emphasis.label.formatter = '暂未开始！';
+                }
+                serie.center = [(i*2+1)*10+'%', '65%'];
+                // if(Math.ceil(data.length/2) === (i+1)) {
+                //     serie.radius = ['60%', '80%'];
+                //     serie.center = [(i*2+1)*10+'%', '60%'];
+                // };
+                option.series.push(serie);
+                html += `<li class="text-center text-bule w-25">
+                            <img src="${item.img}" alt="">
+                            <h6 class="m-1 mb-3">${item.name}</h6>
+                            <h6>${item.zaiXianCount||0}/${item.yuJing||0}/${item.liXianCount||0}/${item.zongShu||0}</h6>
+                        </li>`;
+            })
+            echartView.setOption(option, true);
+            $(window).resize(() => {
+                echartView.resize();      
+            })
+            $('#projectInfo').html(html);
+        }
+        //环境因素
+        function weatherData() {
+            $.ajax({
+                type: "GET",
+                url: "https://free-api.heweather.com/s6/weather/now",
+                async: true,
+                xhrFields:{
+                    withCredentials:false
+                },
+                data: {
+                    "location": "CN101250101",
+                    "key": "eb55782b84b14e439393e2042f90cf75"
+                },
+                success: function (data) {
+                    let weather = data.HeWeather6[0].now;
+                    $('#cond_txt').text(weather.cond_txt);
+                    $('#tmp').text(weather.tmp);
+                    $('#wind_spd').text(weather.wind_spd+'km/h');
+                    $('#hum').text(weather.hum+'%');
+                    $('#pcpn').text(weather.pcpn+'mm');
+                }
+            });
+        }
+        //预警信息 
+        function getWarnMsg(gpId, size) {
+            let warnDom1 = $('#warnMsg p');
+            let warnDom2 = $('#warnMsg table');
+            parent.getData("get","/echart/selectLatelyWarnInfo", {gpId, size}).then((res) => {
+                let warnData = res.data.filter( item => (new Date().getTime() - new Date(item.event_intime).getTime())/1000/60/60 < 24 );
+                if(warnData == null||warnData.length==0) {
+                    warnDom1.text("无预警信息");
+                    warnDom1.fadeIn();
+                    warnDom2.fadeOut();
+                } else {
+                    let html = `<thead><tr class="text-bule bg-liver text-center font-weight-blod">
+                                <th scope="col"><small class="mb-0">采集点</small></th>
+                                <th scope="col"><small class="mb-0">预警等级</small></th>
+                                <th scope="col"><small class="mb-0">开始时间</small></th>
+                                <th scope="col"><small class="mb-0">恢复时间</small></th>
+                            </tr></thead><tbody class="text-light">`;
+                    warnData.forEach((item, i) => {
+                        html += `<tr class="${i%2===0?'bg-secondLiver':'bg-liver'} text-center text-danger">
+                            <td class="d-flex justify-content-around align-items-center pt-2">
+                                <img src="../img/redWran.png" width="14" height="14">
+                                <small class="mb-0 ellipsis">${item.pt_name.substr(0,8)}</small>
+                            </td>
+                            <td><small class="mb-0 ellipsis ">${item.grade}级预警</small></td>
+                            <td><small class="mb-0 ellipsis d-flex flex-column">${item.event_intime.substr(0,10)}<small>${item.event_intime.substr(11,8)}</small></small></td>
+                            <td><small class="mb-0 ellipsis d-flex flex-column">${item.event_recovertime != undefined?item.event_recovertime.substr(0,10): '未恢复'}<small>${item.event_recovertime != undefined?item.event_recovertime.substr(11,8): ''}</small></small></td>
+                        </tr>`;
+                    })
+                    html += '</tbody'
+                    warnDom1.fadeOut();
+                    warnDom2.fadeIn();
+                    warnDom2.html(html);
+                };
+            })
+        }
+        //入口
+        function init() {
+            initScene();
+            // initStats();
+            animate();
+            weatherData();
+            getProInfo();
+            getWarnMsg(0, 10);
+            parent.addModel(scene);
+            changeFrameColor(); 
+        }
+    </script>
+</body>
+</html>

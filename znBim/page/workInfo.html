@@ -1,0 +1,581 @@
+<!DOCTYPE>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>首页</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/common.css">
+
+    <script type="text/javascript">
+        let THREE = parent.THREE;
+    </script>
+    <script type="text/javascript" src="../lib/OrbitControls.js"></script>
+    <script type="text/javascript" src="../lib/OBJLoader.js"></script>
+    <script type="text/javascript" src="../lib/stats.js"></script>
+
+    <script type="text/javascript" src="../lib/CopyShader.js"></script>
+    <script type="text/javascript" src="../lib/EffectComposer.js"></script>
+    <script type="text/javascript" src="../lib/RenderPass.js"></script>
+    <script type="text/javascript" src="../lib/ShaderPass.js"></script>
+    <script type="text/javascript" src="../lib/OutlinePass.js"></script>
+    <script type="text/javascript" src="../lib/SMAAShader.js"></script>
+    <script type="text/javascript" src="../lib/SMAAPass.js"></script>
+    <script type="text/javascript" src="../lib/LuminosityHighPassShader.js"></script>
+    <script type="text/javascript" src="../lib/UnrealBloomPass.js"></script>
+    <script type="text/javascript" src="../lib/onEvent.js"></script>
+
+    <script type="text/javascript" src="../lib/jquery.min.js"></script>
+    <script type="text/javascript" src="../lib/bootstrap.min.js"></script>
+    <!-- <script type="text/javascript" src="../lib/echarts.min.js"></script>
+    <script type="text/javascript" src="../js/canvasView.js"></script> -->
+    <style>
+        .jumbotron {
+            background: url('../image/temInfo.png') no-repeat;
+            background-size: 100% 100%;
+        }
+
+        .pageRight .content1 {
+            background: url('../image/workInfoBox.png') no-repeat;
+            background-size: 100% 100%;
+        }
+
+        .pageRight .content2,
+        .pageLeft .content1 {
+            background: url('../image/warnCount.png') no-repeat;
+            background-size: 100% 100%;
+        }
+
+        .pageLeft .content2 {
+            background: url('../image/bg-img2.png') no-repeat;
+            background-size: 100% 100%;
+        }
+    </style>
+</head>
+
+<body onload="init()">
+    <div class="container-fluid bg-black vh-100 p-0">
+        <div class="row m-0">
+            <section class="bg-black col-sm-4 col-md-4 col-lg-4 col-xl-3 p-0">
+                <div class="pageLeft vh-100" style="padding-bottom: 158px">
+                    <ul class="d-flex flex-column justify-content-start text-light h-100 p-3">
+                        <li class="h-25 pt-2 pb-2">
+                            <div class="content1 h-100 p-2 d-flex flex-column">
+                                <h6 class="text-hightBule">系统维护联系人</h6>
+                                <div class="w-100 d-flex justify-content-around align-items-center" style="flex:1">
+                                    <table class="table table-sm table-borderless table-striped mb-0">
+                                        <thead>
+                                            <tr class="text-bule bg-liver text-center">
+                                                <th scope="col">
+                                                    <h5 class="mb-0">姓名</h5>
+                                                </th>
+                                                <th scope="col">
+                                                    <h5 class="mb-0">职务</h5>
+                                                </th>
+                                                <th scope="col">
+                                                    <h5 class="mb-0">联系电话</h5>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="text-light">
+                                            <tr class="bg-secondLiver text-center">
+                                                <td>
+                                                    <h6 class="mb-0">邓工</h6>
+                                                </td>
+                                                <td>
+                                                    <h6 class="mb-0">项目经理</h6>
+                                                </td>
+                                                <td>
+                                                    <h6 class="mb-0">17018022285</h6>
+                                                </td>
+                                            </tr>
+                                            <tr class="bg-liver text-center">
+                                                <td>
+                                                    <h6 class="mb-0">邓工</h6>
+                                                </td>
+                                                <td>
+                                                    <h6 class="mb-0">项目经理</h6>
+                                                </td>
+                                                <td>
+                                                    <h6 class="mb-0">17018022285</h6>
+                                                </td>
+                                            </tr>
+                                            <tr class="bg-secondLiver text-center">
+                                                <td>
+                                                    <h6 class="mb-0">邓工</h6>
+                                                </td>
+                                                <td>
+                                                    <h6 class="mb-0">项目经理</h6>
+                                                </td>
+                                                <td>
+                                                    <h6 class="mb-0">17018022285</h6>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="pt-2 pb-4" style="height: 75%">
+                            <div class="content2 h-100 p-2 d-flex justify-content-center flex-column">
+                                <div class="d-flex justify-content-between p-2">
+                                    <h6 class="text-hightBule">仪器动态</h6>
+                                </div>
+                                <div class="h-75 d-flex flex-column justify-content-between" style="overflow: hidden;flex:1">
+                                    <table class="table table-sm table-borderless table-striped w-100">
+                                        <thead>
+                                            <tr class="text-bule bg-liver text-center">
+                                                <th class="w-25" scope="col">
+                                                    <h5 class="mb-0">名称</h5>
+                                                </th>
+                                                <th scope="col">
+                                                    <h5 class="mb-0">时间</h5>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="text-light">
+                                            <tr class="bg-secondLiver text-center">
+                                                <td class="d-flex justify-content-around">
+                                                    <h6 class="mb-0 ml-1 mr-1 ellipsis">施工</h6>
+                                                </td>
+                                                <td>
+                                                    <h6 class="mb-0 ellipsis">2020-05-20 18：20：55</h6>
+                                                </td>
+                                            </tr>
+                                            <tr class="bg-liver text-center">
+                                                <td class="d-flex justify-content-around">
+                                                    <h6 class="mb-0 ml-1 mr-1 ellipsis">施工</h6>
+                                                </td>
+                                                <td>
+                                                    <h6 class="mb-0 ellipsis">2020-05-20 18：20：55</h6>
+                                                </td>
+                                            </tr>
+                                            <tr class="bg-secondLiver text-center">
+                                                <td class="d-flex justify-content-around">
+                                                    <h6 class="mb-0 ml-1 ellipsis">施工</h6>
+                                                </td>
+                                                <td>
+                                                    <h6 class="mb-0 ellipsis">2020-05-20 18：20：55</h6>
+                                                </td>
+                                            </tr>
+                                            <tr class="bg-liver text-center">
+                                                <td class="d-flex justify-content-around">
+                                                    <h6 class="mb-0 ml-1 ellipsis">施工</h6>
+                                                </td>
+                                                <td>
+                                                    <h6 class="mb-0 ellipsis">2020-05-20 18：20：55</h6>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <nav class="d-flex justify-content-center mb-2">
+                                        <button class="btn btn-outline-info p-1"><h6 class="m-0">上一页</h6></button>
+                                        <ul class=" btn m-0 p-0 d-flex">
+                                            <li><button class="btn btn-outline-info ml-1 active p-1 pl-2 pr-2"><h6 class="m-0">1</h6></button></li>
+                                            <li><button class="btn btn-outline-info ml-1 p-1 pl-2 pr-2"><h6 class="m-0">2</h6></button></li>
+                                            <li><button class="btn btn-outline-info ml-1 p-1 pl-2 pr-2"><h6 class="m-0">···</h6></button></li>
+                                            <li><button class="btn btn-outline-info ml-1 mr-1 p-1 pl-2 pr-2"><h6 class="m-0">5</h6></button></li>
+                                        </ul>
+                                        <button class="btn btn-outline-info p-1"><h6 class="m-0">上一页</h6></button>
+                                    </nav>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+            <section id="threeModelView" class="bg-black col-md-4 col-sm-4 col-lg-4 col-xl-6 vh-100 p-0">
+            </section>
+            <section class="bg-black col-sm-4 col-md-4 col-lg-4 col-xl-3 p-0 pr-2">
+                <div class="pageRight pr-2 pl-2" style="min-width: 280px">
+                    <ul class="d-flex flex-column justify-content-around text-light vh-100">
+                        <li class="pt-2 pb-2" style="height: 65%">
+                            <div class="content1 h-100 p-2 d-flex justify-content-center flex-column">
+                                <div class="d-flex justify-content-between p-2">
+                                    <h6 class="text-hightBule">工程信息</h6>
+                                    <div class="update">
+                                        <img src="../image/update.png" width="25" height="25">
+                                        <a class="text-light" href="###">上传数据</a>
+                                    </div>
+                                </div>
+                                <div class="h-75 d-flex flex-column justify-content-between" style="overflow: auto;flex:1">
+                                    <table class="table table-sm table-borderless table-striped w-100">
+                                        <thead>
+                                            <tr class="text-bule bg-liver text-center">
+                                                <th class="w-25" scope="col">
+                                                    <h5 class="mb-0">名称</h5>
+                                                </th>
+                                                <th scope="col">
+                                                    <h5 class="mb-0">时间</h5>
+                                                </th>
+                                                <th scope="col">
+                                                    <h5 class="mb-0">内容</h5>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="text-light">
+                                            <tr class="bg-secondLiver text-center">
+                                                <td class="d-flex justify-content-around">
+                                                    <h6 class="mb-0 ml-1 mr-1 ellipsis">施工</h6>
+                                                </td>
+                                                <td>
+                                                    <h6 class="mb-0 ellipsis">2020-05-20 18：20：55</h6>
+                                                </td>
+                                                <td>
+                                                    <h6 class="mb-0 ellipsis">中南大学在线监测平台</h6>
+                                                </td>
+                                            </tr>
+                                            <tr class="bg-liver text-center">
+                                                <td class="d-flex justify-content-around">
+                                                    <h6 class="mb-0 ml-1 mr-1 ellipsis">施工</h6>
+                                                </td>
+                                                <td>
+                                                    <h6 class="mb-0 ellipsis">2020-05-20 18：20：55</h6>
+                                                </td>
+                                                <td>
+                                                    <h6 class="mb-0 ellipsis">中南大学在线监测平台</h6>
+                                                </td>
+                                            </tr>
+                                            <tr class="bg-secondLiver text-center">
+                                                <td class="d-flex justify-content-around">
+                                                    <h6 class="mb-0 ml-1 mr-1 ellipsis">施工</h6>
+                                                </td>
+                                                <td>
+                                                    <h6 class="mb-0 ellipsis">2020-05-20 18：20：55</h6>
+                                                </td>
+                                                <td>
+                                                    <h6 class="mb-0 ellipsis">中南大学在线监测平台</h6>
+                                                </td>
+                                            </tr>
+                                            <tr class="bg-liver text-center">
+                                                <td class="d-flex justify-content-around">
+                                                    <h6 class="mb-0 ml-1 mr-1 ellipsis">施工</h6>
+                                                </td>
+                                                <td>
+                                                    <h6 class="mb-0 ellipsis">2020-05-20 18：20：55</h6>
+                                                </td>
+                                                <td>
+                                                    <h6 class="mb-0 ellipsis">中南大学在线监测平台</h6>
+                                                </td>
+                                            </tr>
+                                            <tr class="bg-secondLiver text-center">
+                                                <td class="d-flex justify-content-around">
+                                                    <h6 class="mb-0 ml-1 mr-1 ellipsis">施工</h6>
+                                                </td>
+                                                <td>
+                                                    <h6 class="mb-0 ellipsis">2020-05-20 18：20：55</h6>
+                                                </td>
+                                                <td>
+                                                    <h6 class="mb-0 ellipsis">中南大学在线监测平台</h6>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <nav class="d-flex justify-content-center mb-2">
+                                        <button class="btn btn-outline-info p-1"><h6 class="m-0">上一页</h6></button>
+                                        <ul class=" btn m-0 p-0 d-flex">
+                                            <li><button class="btn btn-outline-info ml-1 active p-1 pl-2 pr-2"><h6 class="m-0">1</h6></button></li>
+                                            <li><button class="btn btn-outline-info ml-1 p-1 pl-2 pr-2"><h6 class="m-0">2</h6></button></li>
+                                            <li><button class="btn btn-outline-info ml-1 p-1 pl-2 pr-2"><h6 class="m-0">···</h6></button></li>
+                                            <li><button class="btn btn-outline-info ml-1 mr-1 p-1 pl-2 pr-2"><h6 class="m-0">5</h6></button></li>
+                                        </ul>
+                                        <button class="btn btn-outline-info p-1"><h6 class="m-0">上一页</h6></button>
+                                    </nav>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="pb-3" style="height: 30%">
+                            <div class="content2 h-100 p-3 d-flex flex-column">
+                                <h6 class="text-hightBule">预警仪器统计</h6>
+                                <div class="w-100 d-flex justify-content-around align-items-center" style="flex:1">
+                                    <div id="circleEchart" class="h-100 w-100"></div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+        <footer class="fixed-bottom bg-black col-sm-8 col-md-8 col-lg-8 col-xl-9 pt-1 pb-4">
+            <div class="jumbotron mb-0 p-3 text-light">
+                <div class="position-relative" style="height: 120px;">
+                    <h6 class="position-absolute text-hightBule">在线仪器统计</h6>
+                    <ul class="position-absolute d-flex justify-content-center w-100" style="top: 50%; transform: translateY(-30%); left: 0;z-index: 1;">
+                        <li class="text-center text-bule w-25" style="border-right: 1px dashed #37D9FC">
+                            <img src="../image/naodu.png" width="30" heigth="30" alt="">
+                            <h6 class="m-1">挠度</h6>
+                            <h6>4/10</h6>
+                        </li>
+                        <li class="text-center text-bule w-25" style="border-right: 1px dashed #37D9FC">
+                            <img src="../image/quake.png" width="30" heigth="30" alt="">
+                            <h6 class="m-1">震动</h6>
+                            <h6>4/10</h6>
+                        </li>
+                        <li class="text-center text-bule w-25" style="border-right: 1px dashed #37D9FC">
+                            <img src="../image/lean.png" width="30" heigth="30" alt="">
+                            <h6 class="m-1">倾斜</h6>
+                            <h6>4/10</h6>
+                        </li>
+                        <li class="text-center text-bule w-25" style="border-right: 1px dashed #37D9FC">
+                            <img src="../image/speed.png" width="30" heigth="30" alt="">
+                            <h6 class="m-1">应力</h6>
+                            <h6>4/10</h6>
+                        </li>
+                        <li class="text-center text-bule w-25">
+                            <img src="../image/tem.png" width="20" heigth="20" alt="">
+                            <h6 class="m-1">温度</h6>
+                            <h6>4/10</h6>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <script>
+        let camera, scene, renderer, controls, stats, composer, outLineColor;
+        let threeView = $('#threeModelView');
+        let layers = new THREE.Layers();
+        //3D场景初始化
+        function initScene() {
+            camera = new THREE.PerspectiveCamera(75, threeView.width() / threeView.height(), 1, 20000);
+            // camera.position.set( -230, 150, 0 ); 
+            camera.position.set(50, 250, 550); 
+            scene = new THREE.Scene();
+            THREE.onEvent(scene, camera, threeView.width(), threeView.height()); //事件初始化
+            //场景中添加网格辅助
+            let grid = new THREE.GridHelper(1200, 20, 0x38b0de, 0x38b0de);
+            // scene.add( grid );
+            // 给场景添加一个环境光
+            let ambientLight = new THREE.AmbientLight(0x888888, 2);
+            scene.add(ambientLight);
+            // 给场景添加一个平行光出来
+            let dirLight = new THREE.DirectionalLight(0xffffff, 2);
+            //  dirLight.color.setHSL( 0.1, 1, 0.95 );
+            dirLight.position.set(-1, 1.75, 1);
+            dirLight.position.multiplyScalar(30);
+            scene.add(dirLight);
+            //实例化一个渲染器s
+            renderer = new THREE.WebGLRenderer({
+                antialias: true,
+                alpha: true
+            });
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setSize(threeView.width(), threeView.height());
+            // renderer.setClearColor( 0xffffff, 0.1);   
+            threeView.append(renderer.domElement);
+            //控制相机
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.minPolarAngle = 0;
+            controls.maxPolarAngle = Math.PI / 2.1;
+            //设置相机移动距离
+            controls.minDistance = 100;
+            controls.maxDistance = 1000;
+            // 使动画循环使用时阻尼或自转 意思是否有惯性
+            controls.enableDamping = true;
+            //动态阻尼系数 就是鼠标拖拽旋转灵敏度
+            controls.dampingFactor = 0.6;
+            window.addEventListener('resize', onWindowResize, false);
+            composerPass(renderer);
+        }
+        //后期通道
+        function composerPass(renderer) {
+            composer = new THREE.EffectComposer(renderer); //通道组合器
+            var renderPass = new THREE.RenderPass(scene, camera); //渲染一个新环境
+            // 外边框outLine
+            outLineColor = new THREE.OutlinePass(
+                new THREE.Vector2(threeView.width(), threeView.height()), scene, camera);
+            outLineColor.visibleEdgeColor.set('orangered');
+            outLineColor.edgeStrength = 8;
+            //场景发光
+            var bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(threeView.width(), threeView.height()))
+            bloomPass.exposure = 1;
+            bloomPass.threshold = 0;
+            bloomPass.strength = .5;
+            bloomPass.radius = 1;
+            bloomPass.enabled = false;
+            //抗锯齿SMAAShader
+            var SMAAShader = new THREE.SMAAPass(threeView.width(), threeView.height());
+            SMAAShader.renderToScreen = true;
+
+            composer.addPass(renderPass);
+            composer.addPass(bloomPass);
+            composer.addPass(outLineColor);
+            composer.addPass(SMAAShader);
+
+        }
+        //屏幕宽度监听
+        function onWindowResize() {
+            camera.aspect = threeView.width() / threeView.height();
+            camera.updateProjectionMatrix();
+            renderer.setSize(threeView.width(), threeView.height());
+            composer.setSize(threeView.width(), threeView.height());
+            THREE.onEvent(scene, camera, threeView.width(), threeView.height()); //事件初始化
+        }
+        //初始化性能插件
+        function initStats() {
+            stats = new Stats();
+            document.body.appendChild(stats.dom);
+        }
+
+        function distance() {
+            if (scene.getObjectByName('frameBox') == undefined ||
+                scene.getObjectByName('note') == undefined) {
+                return false;
+            }
+            let point = new THREE.Vector3(0, 0, 0);
+            let distance = point.distanceTo(camera.position);
+            if (distance < 350) {
+                scene.getObjectByName('frameBox').layers.mask = 2;
+                scene.getObjectByName('note').layers.mask = 2;
+            } else {
+                scene.getObjectByName('frameBox').layers.mask = 1;
+                scene.getObjectByName('note').layers.mask = 1;
+            }
+        }
+        //渲染
+        function animate() {
+            //更新性能插件
+            // stats.update(); 
+            controls.update();
+            // renderer.render(scene, camera);
+            parent.TWEEN.update();
+            composer.render();
+            composer.autoClear = false;
+            distance();
+            requestAnimationFrame(animate);
+        }
+        //场景物体
+        function renderThing() {
+            scene.traverse((child) => {
+                if (child.name === 'box') {
+                    child.on('hover', () => {
+                        outLineColor.selectedObjects = [child];
+                    }, () => {
+                        outLineColor.selectedObjects = [];
+                    })
+                    child.on('click', () => {
+                        parent.thingAniamte(camera.position, {
+                            x: child.position.x,
+                            y: child.position.y + 100,
+                            z: child.position.z
+                        }, 2000)
+                    })
+                }
+                if (child.name === 'frameBox') {
+                    child.on('hover', () => {
+                        outLineColor.selectedObjects = [child];
+                    }, () => {
+                        outLineColor.selectedObjects = [];
+                    })
+                    child.on('click', () => {
+                        parent.thingAniamte(camera.position, {
+                            x: child.position.x - 250,
+                            y: child.position.y + 100,
+                            z: child.position.z
+                        }, 2000)
+                    })
+                }
+            })
+        }
+        //footer图表
+        function circleEcharts() {
+            let data = [{}];
+            var option = {
+                color: ['#52FFFF', '#16A5FF', '#FDAD01', '#FD6431', '#F33F8C'],
+                backgroundColor: 'rgba(225,225,225,0)',
+                legend: {
+                    orient: 'vertical',
+                    top: 20,
+                    right: 10,
+                    data: ['',
+                        {
+                            name: '在线',
+                            textStyle: {
+                                color: '#52FFFF'
+                            }
+                        },
+                        {
+                            name: '离线',
+                            textStyle: {
+                                color: '#16A5FF'
+                            }
+                        },
+                        {
+                            name: '一级预警',
+                            textStyle: {
+                                color: '#FDAD01'
+                            }
+                        },
+                        {
+                            name: '二级预警',
+                            textStyle: {
+                                color: '#FD6431'
+                            }
+                        },
+                        {
+                            name: '三级预警',
+                            textStyle: {
+                                color: '#F33F8C'
+                            }
+                        }
+                    ]
+                },
+                series: [{
+                    name: '仪表盘',
+                    startAngle: -45,
+                    type: 'pie',
+                    radius: ['60%', '80%'],
+                    center: ['30%', '55%'],
+                    label: {
+                        show: false
+                    },
+                    emphasis: {
+                        label: {
+                            show: true
+                        }
+                    },
+                    data: [{
+                            value: 25,
+                            name: '在线'
+                        },
+                        {
+                            value: 35,
+                            name: '离线'
+                        },
+                        {
+                            value: 25,
+                            name: '一级预警'
+                        },
+                        {
+                            value: 15,
+                            name: '二级预警'
+                        },
+                        {
+                            value: 25,
+                            name: '三级预警'
+                        }
+                    ]
+                }]
+            }
+            let echartView = parent.echarts.init(document.querySelector('#circleEchart'));
+            echartView.setOption(option, true);
+            $(window).resize(() => {
+                echartView.resize();
+            })
+        }
+
+        function init() {
+            initScene();
+            // initStats();
+            animate();
+            circleEcharts();
+            parent.addModel(scene).then(() => {
+                renderThing();
+            });
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>挠度</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/common.css">
+
+    <script type="text/javascript" src="../lib/three.min.js"></script>
+    <script type="text/javascript" src="../lib/OrbitControls.js"></script>
+    <script type="text/javascript" src="../lib/OBJLoader.js"></script>
+    <script type="text/javascript" src="../lib/stats.js"></script>
+
+    <script type="text/javascript" src="../lib/CopyShader.js"></script>
+    <script type="text/javascript" src="../lib/EffectComposer.js"></script>
+    <script type="text/javascript" src="../lib/RenderPass.js"></script>
+    <script type="text/javascript" src="../lib/ShaderPass.js"></script>
+    <script type="text/javascript" src="../lib/OutlinePass.js"></script>
+    <script type="text/javascript" src="../lib/SMAAShader.js"></script>
+    <script type="text/javascript" src="../lib/SMAAPass.js"></script>
+    <script type="text/javascript" src="../lib/LuminosityHighPassShader.js"></script>
+    <script type="text/javascript" src="../lib/UnrealBloomPass.js"></script>
+
+    <script type="text/javascript" src="../lib/jquery.min.js"></script>
+    <script type="text/javascript" src="../lib/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../lib/echarts.min.js"></script>
+    <script type="text/javascript" src="../js/canvasView.js"></script>
+    <style>
+        .pageRight .content1, #temView {
+            background: url('../image/bg-img2.png') no-repeat;
+            background-size: 100% 100%;
+        }
+        .temInfo {
+            background: url('../image/temInfo.png') no-repeat;
+            background-size: 100% 100%;
+        }
+        .monitorInfo {
+            background: url('../image/monitorInfo.png') no-repeat;
+            background-size: 100% 100%;
+        }
+    </style>
+</head>
+<body onload="init()">
+    <div  class="container-fluid p-0  bg-black w-100 vh-100">
+        <section class="fixed-top col-6 vh-100 p-4 pr-2">
+            <div id="temView" class="p-3 d-flex flex-column" style="height: 65%">
+                <h5 class="text-hightBule">三维云图</h5>
+                <img class="w-100 overflow-hidden" src="../image/temCould.png" alt="" style="flex: 1">
+            </div>
+        </section>
+        <section class="position-fixed col-6 p-0" style="right: 0;">
+            <div class="pageRight vh-100 pr-4 pt-4 pb-4">
+                <div class="content1 p-3 d-flex flex-column" style="height: 65%">
+                    <h5 class="text-hightBule">温度曲线图</h5>
+                    <div id="temEchart" style="flex: 1">
+                    </div>
+                </div>
+            </div>
+        </section>
+        <footer class="fixed-bottom w-100 p-4 pt-0" style="height: 30%; bottom: 5%">
+            <div class="temInfo p-3 text-light h-100 d-flex flex-column">
+                <h5 class="text-hightBule">各监测温度数值</h5>
+                <ul class="d-flex justify-content-around align-items-center" style="flex: 1">
+                    <li class="monitorInfo p-3 pl-4 pr-4 mr-2">
+                        <h6>传感器编号：01-01</h6>
+                        <h6>温度：10℃</h6>
+                    </li>
+                    <li class="monitorInfo p-3 pl-4 pr-4 mr-2">
+                        <h6>传感器编号：01-01</h6>
+                        <h6>温度：10℃</h6>
+                    </li>
+                    <li class="monitorInfo p-3 pl-4 pr-4 mr-2">
+                        <h6>传感器编号：01-01</h6>
+                        <h6>温度：10℃</h6>
+                    </li>
+                    <li class="monitorInfo p-3 pl-4 pr-4 mr-2">
+                        <h6>传感器编号：01-01</h6>
+                        <h6>温度：10℃</h6>
+                    </li>
+                    <li class="monitorInfo p-3 pl-4 pr-4 mr-2">
+                        <h6>传感器编号：01-01</h6>
+                        <h6>温度：10℃</h6>
+                    </li>
+                    <li class="monitorInfo p-3 pl-4 pr-4 mr-2">
+                        <h6>传感器编号：01-01</h6>
+                        <h6>温度：10℃</h6>
+                    </li>
+                    <li class="monitorInfo p-3 pl-4 pr-4 mr-2">
+                        <h6>传感器编号：01-01</h6>
+                        <h6>温度：10℃</h6>
+                    </li>
+                </ul>
+            </div>
+        </footer>
+    </div>
+    <script>
+        let camera, scene, renderer, controls, stats, composer;
+        let threeView = $('#threeModelView');
+        //3D场景初始化
+        function initScene() {
+            camera = new THREE.PerspectiveCamera( 75, threeView.width() / threeView.height(), 1, 20000 );
+            // camera.position.set( -230, 150, 0 ); 
+            camera.position.set( 500, 450, 0 ); 
+            camera.lookAt(0,0,0);
+            scene = new THREE.Scene();
+            //场景中添加网格辅助
+            var polarGridHelper = new THREE.PolarGridHelper( 300, 24, 10, 24, '#41dd9c', '#3299cc' );
+            polarGridHelper.position.y = -30;
+            scene.add( polarGridHelper );
+            setInterval(() => {
+                polarGridHelper.rotation.y += 0.5;
+            },50)
+            // let grid = new THREE.GridHelper( 800, 50, 0x38b0de, 0x38b0de);
+            // grid.position.x = -30;
+            // scene.add( grid );
+            // 给场景添加一个环境光
+            let ambientLight = new THREE.AmbientLight( 0x888888);
+            scene.add( ambientLight );
+            // 给场景添加一个平行光出来
+            let dirLight = new THREE.DirectionalLight( 0xffffff, 1 );
+            //  dirLight.color.setHSL( 0.1, 1, 0.95 );
+            dirLight.position.set( -1, 1.75, 1 );
+            dirLight.position.multiplyScalar( 30 );
+            //     scene.add( dirLight );
+            //实例化一个渲染器s
+            renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
+            renderer.setPixelRatio( window.devicePixelRatio );
+            renderer.setSize( threeView.width(), threeView.height());
+            // renderer.setClearColor( 0xffffff, 0.1);   
+            threeView.append( renderer.domElement );
+            //控制相机
+            controls = new THREE.OrbitControls( camera, renderer.domElement);
+            controls.enableZoom = true;
+            //设置相机移动距离
+            controls.minDistance = 100;
+            controls.maxDistance = 1000;
+            // 使动画循环使用时阻尼或自转 意思是否有惯性
+            controls.enableDamping = true;
+            //动态阻尼系数 就是鼠标拖拽旋转灵敏度
+            controls.dampingFactor = 0.4;
+            window.addEventListener( 'resize', onWindowResize, false );
+            // bulidPlane();
+            function bulidPlane() {
+                let plane = new THREE.PlaneGeometry(400,350);
+                let material = new THREE.MeshPhongMaterial({color: "#eee", side: THREE.DoubleSide,transparent: true,opacity: 0.1});
+                let mesh = new THREE.Mesh(plane, material);
+                mesh.rotation.x = -1.57;
+                scene.add(mesh);
+            }
+            composerPass(renderer);
+            // var frame = window.thing
+            // scene.add(thing);
+        }
+        //后期通道
+        function composerPass(renderer) {
+            composer = new THREE.EffectComposer(renderer);//通道组合器
+            var renderPass = new THREE.RenderPass( scene, camera );//渲染一个新环境
+            // 外边框outLine
+            var outLineColor = new THREE.OutlinePass( 
+                new THREE.Vector2( threeView.width(), threeView.height() ), scene, camera);
+            outLineColor.visibleEdgeColor.set( 'orangered' );
+            outLineColor.edgeStrength = 8;
+            //场景发光
+            var bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2( threeView.width(), threeView.height() ))
+            bloomPass.exposure =1;
+            bloomPass.threshold = 0;
+            bloomPass.strength = 0.2;
+            bloomPass.radius = 1;
+            // bloomPass.enabled  = false;
+                
+            //抗锯齿SMAAShader
+            var SMAAShader= new THREE.SMAAPass( threeView.width(),  threeView.height() );
+            SMAAShader.renderToScreen = true;
+
+            composer.addPass( renderPass );
+            composer.addPass( bloomPass );
+            composer.addPass(outLineColor);
+            composer.addPass( SMAAShader );
+
+        }
+        //屏幕宽度监听
+        function onWindowResize() {
+            camera.aspect = threeView.width() /threeView.height();
+            camera.updateProjectionMatrix();
+            renderer.setSize( threeView.width(),threeView.height() );
+            THREE.onEvent(scene, camera,threeView.width(), threeView.height());//事件初始化
+        }
+        //初始化性能插件
+        function initStats() {
+            stats = new Stats();
+            document.body.appendChild(stats.dom);
+        }
+        //渲染
+        function animate() {
+            //更新性能插件
+            stats.update(); 
+            controls.update();
+            // renderer.render(scene, camera);
+            composer.render();
+            composer.autoClear = false; 
+            requestAnimationFrame(animate);
+        }
+        //footer图表
+        function dataEcharts() {
+            let data = [{}];
+            let seriesRoot = {
+                            name: '',
+                            type: 'line',
+                            data: [20,30,32,45,32,23,20]
+                        }
+            var option = {
+                color: ['#52FFFF','#FFAE00','#F53F8C'],
+                backgroundColor:'rgba(225,225,225,0)',
+                legend: {
+                    top: -15,
+                    right: 10,
+                    data: []
+                },
+                textStyle: {
+                    color: '#eee',
+                    textBorderColor: '#eee'
+                },
+                xAxis: {
+                    type: 'category',
+                    name: '(时)',
+                    splitLine: {
+                        show: true,
+                        lineStyle: {
+                            color: 'rgba(82,255,255,.16)'
+                        }
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            color: 'rgba(82,255,255,.16)'
+                        }
+                    },
+                    data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+                },
+                yAxis: {
+                    name: '(℃)',
+                    type: 'value',
+                    axisLine: {
+                        lineStyle: {
+                            color: 'rgba(82,255,255,.16)'
+                        }
+                    },
+                    splitLine: {
+                        show: true,
+                        lineStyle: {
+                            color: 'rgba(82,255,255,.16)'
+                        }
+                    }
+                },
+                series: []
+            }
+            data.forEach((item, i) => {
+                let serie = {...seriesRoot};
+                option.series.push(serie);
+            })
+            let echartView = echarts.init(document.querySelector('#temEchart'));
+            echartView.setOption(option, true);
+            $(window).resize(() => {
+                echartView.resize();    
+            })
+        }
+        function init() {
+            // initScene();
+            // initStats();
+            // animate();
+            dataEcharts();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,274 @@
+body {
+    overflow: hidden;
+}
+ul, li {
+    list-style: none;
+    margin-bottom: 0rem;
+    margin-block-start: 0em;
+    margin-block-end: 0em;
+    padding-inline-start: 0px;
+}
+a {
+    cursor: pointer;
+}
+a:hover {
+    text-decoration: none;
+    color: #00F6FF;
+}
+::-webkit-scrollbar-track-piece {
+    background: #d3dce6;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #A4B0C0;
+    border-radius: 20px;
+}
+.bg-black {
+    background-color: #000 !important;
+}
+.bg-gradients {
+    background-image: linear-gradient( 45deg, #1A2D5E,  rgb(23,91,128));
+}
+.bg-secondBlack {
+    background-color: #041543 !important;
+}
+.bg-liver {
+    background-color: rgb(23,91,128) !important;
+}
+.bg-secondLiver {
+    background-color: rgb(13,51,88) !important;
+}
+.text-hightBule {
+    color: #00F6FF;
+    text-shadow: 2px 0 5px #00F6FF;
+}
+.text-bule {
+    color: #37D9FC;
+}
+.ellipsis {
+    text-overflow: ellipsis;
+    overflow: hidden !important;
+    white-space: nowrap;
+}
+.block-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 1;
+    transform: translate(-50%, -50%);
+}
+.table-md td {
+    padding: 0.4rem;
+}
+/* 桁架切换按钮 */
+.framelist {
+    width: 120px;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    height: 50px;
+    z-index: 5;
+}
+.framelist ul {
+    padding: 0 !important;
+    cursor: pointer;
+}
+.framelist ul li {
+    color: #f5f5f5;
+    text-align: center;
+    line-height: 56px;
+    font-size: 20px;
+    border-radius: 50%;
+    background:rgba(11, 23, 43, 0.5);
+    border: 1px solid  rgb(23,91,128);
+    transition: transform 0.1s ease;
+}
+.framelist ul li:hover {
+    background: rgba(31,59,107,0.4);
+    box-shadow: 0 2px 2px 2px #3299cc;
+    z-index: 88;
+}
+.selected {
+    background: #3299cc !important;
+}
+/* 传感器信息牌 */
+.sensorData{
+    display: none;
+    position: absolute;
+    padding: 10px;
+    color: #fff;
+    font-size: 16px;
+    line-height: 1;
+    width: 250px;
+    background: linear-gradient(to left, #00F6FF, #38b0de) left top no-repeat, 
+    linear-gradient(to bottom, #00F6FF, #00F6FF) left top no-repeat, 
+    linear-gradient(to left, #00F6FF, #00F6FF) right top no-repeat,
+    linear-gradient(to bottom, #00F6FF, #00F6FF) right top no-repeat, 
+    linear-gradient(to left, #00F6FF, #00F6FF) left bottom no-repeat,
+    linear-gradient(to bottom, #00F6FF, #00F6FF) left bottom no-repeat,
+    linear-gradient(to left, #00F6FF, #00F6FF) right bottom no-repeat,
+    linear-gradient(to left, #00F6FF, #00F6FF) right bottom no-repeat;
+    background-size: 0.12rem 100rem, 0.6rem 0.12rem, 0.12rem 100rem, 0.6rem 0.12rem;
+}
+.sensorData ul {
+    padding: 10px 15px;
+    line-height: 22px;
+    border: 0.3px solid #00F6FF;
+    background: rgba(19, 23, 24, 0.5);
+}
+.sensorData ul li span {
+    color: #00F6FF;
+    font-weight: 550;
+}
+.sensorData ul li:first-child {
+    border-bottom: 1px solid #38b0de;
+    padding-bottom: 10px; 
+    margin-bottom: 10px; 
+    display: flex;
+    justify-content: space-between;
+}
+.sensorData ul li img {
+    width: 50px;
+    height: 40px;
+}
+.sensorData ul li img+div{
+    width: 50px;
+    height: 30px;
+    padding-left: 20px;
+    padding-top: 2px;
+    line-height: 18px; 
+    flex: 1;
+}
+.sensorData img+div p {
+    color: #eee;
+    font-size: 12px;
+    font-weight: normal;
+}
+/* 传感器信息 */
+.info {
+    position: absolute;
+    width: 150px;
+    height: 70px;
+    user-select: none;
+}
+.info:hover ul, .info:hover .light,
+.info:hover li::after
+{
+    cursor: pointer;
+    z-index: 999;
+    color: #00F6FF;
+    border-color: #00F6FF;
+    font-weight: 700;
+}
+.info ul {
+    position: relative;
+    width: 150px;
+    padding: 5px;
+    height: 30px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #37D9FC;
+    background: rgba(0,0,0,.6);
+    border: 2px solid #37D9FC; 
+    border-radius: 20px;
+}
+.info ul li {
+    width: auto;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    text-align: center;
+}
+.info ul li::after {
+    content: "";
+    width: 10px;
+    height: 10px;
+    border: 2px solid #00F6FF;
+    border-width: 0 2px 2px 0; 
+    position: absolute;
+    left: 67.5px;
+    bottom: -7px;
+    transform: rotateZ(45deg);
+}
+.info:hover ul {
+    width: 200px;
+}
+.info .light {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 60px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.light div {
+    width: 60px;
+    height: 60px;
+    border-radius: 50px;
+    animation: lightFlash 2s linear infinite;
+    background: radial-gradient(#fff, green);
+}
+@keyframes lightFlash{
+    0% {
+        transform: scale(0.1);
+        opacity: 1; 
+    }
+    25%{
+        transform: scale(0.1);
+        opacity: 1;
+    }
+    100%{
+        opacity: 0;
+        transform: scale(1);
+    }
+}
+.light p {
+    position: absolute;
+    left: 50%;
+    toP: 50%;
+    transform: translate(-50%, -50%);
+    width: 12px;
+    height: 12px;
+    border-radius: 50px; 
+    background: radial-gradient(#ccc 1%, green 50%);
+}
+#loading, #loading1 , #loading2{
+ width: 50px;
+ height: 50px;
+ top: 50%;
+ left: 50%;
+ transform: translate(-50%, -50%);   
+}
+@media all and (min-width: 375px) {
+   html {
+       font-size: 11px;
+   }
+}
+@media all and (min-width: 768px) and (max-width:1200px){
+    html {
+        font-size: 12px;
+    }
+ }
+ @media all and (min-width: 1200px) {
+    html {
+        font-size: 14px;
+    }
+ }
+ @media all and (min-width: 1400px) {
+    html {
+        font-size: 16px;
+    }
+ }
+ @media all and (min-width: 1920px) {
+    html {
+        font-size: 16px;
+    }
+ }

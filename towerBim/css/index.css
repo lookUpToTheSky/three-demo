@@ -1,0 +1,548 @@
+body{
+    position: relative;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    overflow: hidden;
+    background-color: #000;
+}
+.container {
+    width: 100%;
+    min-height: 100vh;
+    box-sizing: border-box; 
+    background: #000;
+}
+.sensorInfo {
+    width: auto;
+    height: auto;
+    display: none;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 20;
+}
+.sensorInfo .close {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    cursor: pointer;
+    z-index: 99;
+}
+.sensorInfo .close:hover{
+    transform: scale(1.2);
+}
+/* 头部 */
+.header {
+    width: 100%;
+    height: 70px;
+    text-align: center;
+    background-size: 100% 100%;
+    background: #222;
+    position: fixed;
+    transform-origin: center top;
+    border-bottom: 2px solid #1D808B;
+    top: 0;
+    left: 0;
+    z-index: 100;
+}
+.header:after{
+    width: 100%;
+    height: 65px;
+    background: url('../img/bgt.png') no-repeat;
+    background-size: 100% 100%;
+    background-position: 0px -5px;
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;/*-1 可以当背景*/
+}
+.header .title {
+    font-size: 30px;
+    line-height: 65px;
+    color: #fff;
+    text-shadow: 2px 1px 1px #60ACEB;
+}
+.header .time{
+    color: #fff;
+    display: flex;
+    align-items: center;
+    position: absolute; 
+    right: 80px;
+    top: 10px;
+}
+.header .wether {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    line-height: 40px;
+    left: 80px;
+    top: 5px;
+}
+.header .wether #tem{
+    color: orange;
+}
+.header .wether ul {
+    width: 350px;
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 14px;
+    height: 40px;
+}
+.header .wether ul li {
+    width: 110px;
+    height: 30px;
+    color: #eee;
+    padding-left: 3px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.header .wether ul li span {
+    padding: 0 3px;
+    color: #38b0de;
+}
+.header .time img, 
+.header .wether img{
+    width: 25px;
+    height: 25px;
+}
+.header .time > span {
+    font-size: 20px;
+    padding: 0 10px;
+    border-right: 2px solid #60ACEB;
+}
+.header .time > div {
+    display: flex;
+    flex-direction: column;
+    padding: 0 20px;
+}
+.time > div>span:first-child {
+    padding-bottom: 2px;
+    border-bottom: 1px solid #6DA8DB;
+}
+.time > div>span {
+    font-size: 10px;
+}
+/* 左右布局盒子 */
+.pageLeft, .pageRight {
+    padding: 0 20px;
+    height: 1041px;
+    width: 350px;
+    position: absolute;
+    z-index: 60;
+    flex-basis: flex-start;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    background: #333;
+    transition: all 0.5s linear;
+}
+.pageLeft{
+    left: 0px;
+    padding-top: 120px;
+    transform-origin: left top;
+    border-right: 2px solid #1D808B;
+}
+.pageRight {
+    right: 0px;
+    padding-top: 120px;
+    transform-origin: right top;
+    border-left: 2px solid #1D808B;
+}
+.controlLeft,.controlRight {
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    top: 50%;
+}
+.controlLeft {
+    left: 350px;
+}
+.controlRight {
+    left: -40px;
+    transform: rotateZ(180deg);
+}
+/* 所有标题样式 */
+.dataInfo,.warnMsg1,
+.lightStatus,.getDataInfo,
+.chargeMan,.echartWarpper{
+    width: 350px;
+    padding: 10px;
+    margin-bottom: 21px;
+    box-sizing: border-box;
+    transition:transform 0.3s ease;
+    background: url('../img/infoBorder.png') no-repeat;
+    background-size: 100% 100%; 
+}
+.dataInfo .title,
+.echartWarpper .title,
+.fullEchartWarpper .title,
+.warnMsg1 .title,
+.getDataInfo .title,
+.lightStatus .title{
+    display: inline-block;
+    font-size: 16px;
+    line-height: 34px;
+    color: #fff;
+    width: 100%;
+    padding-left: 12px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    background:linear-gradient(to right, rgba(58,103,175,1),rgba(43,78,132,0.14));
+    opacity:0.77;
+}
+.dataInfo {
+    height: 208px;
+}
+.dataInfo ul li, 
+.detail-info li,
+.factors .item{
+    color: #fff;
+    font-size: 14px;
+    width: 320px;
+    margin: 0 auto;
+    padding: 2px;
+    line-height: 34px;
+    margin-bottom: 14px;
+    box-sizing: border-box;
+    background: linear-gradient(to left, #38b0de, #38b0de) left top no-repeat, 
+    linear-gradient(to bottom, #38b0de, #38b0de) left top no-repeat, 
+    linear-gradient(to left, #38b0de, #38b0de) right bottom no-repeat,
+    linear-gradient(to left, #38b0de, #38b0de) right bottom no-repeat;
+    background-size: 0.05rem 0.3rem, 0.3rem 0.05rem, 0.05rem 0.3rem, 0.3rem 0.05rem;
+}
+.dataInfo ul li:nth-child(2n),
+.detail-info li:nth-child(2n),
+.factors .item:nth-child(2n+1){
+    background: 
+    linear-gradient(to left, #38b0de, #38b0de) right top no-repeat,
+    linear-gradient(to bottom, #38b0de, #38b0de) right top no-repeat, 
+    linear-gradient(to left, #38b0de, #38b0de) left bottom no-repeat,
+    linear-gradient(to bottom, #38b0de, #38b0de) left bottom no-repeat;
+    background-size: 0.05rem 0.3rem, 0.3rem 0.05rem, 0.05rem 0.3rem, 0.3rem 0.05rem; 
+}
+.dataInfo .dataBox, .detail-info .dataBox,
+.factors .dataBox {
+    padding: 0 5px;
+    width: 320px;
+    display: flex;
+    box-sizing: border-box;
+    justify-content: space-between;
+    background:rgba(31,59,107,0.8);
+}
+.dataInfo .dataBox>div{
+    width: 49%;
+    display: flex;
+    font-size: 16px;
+}
+.dataInfo .dataBox div:hover span,
+.detail-info .dataBox div:hover span{
+    transition: all 0.2s linear;
+    font-size: 18px;
+    font-weight: 550;
+}
+.dataBox div:nth-child(2) {
+    padding-left: 30px;
+}
+#allGpNum, #allSensorNum,
+#allDataNum, #allWarnNum,#weight,
+#times,#h24MaxValue, #d15MaxValue,
+#h24Speed, #d15Speed,
+#senName,#senstate,#senData {
+    color: #FAA61F;
+    font-weight: 550;
+}
+#sensorNum{
+    color: #32cd32;
+    font-weight: 550;
+}
+/* 图表 */
+.echartWarpper {
+    width: 350px;
+    height: 336px;
+    min-height: 300px;
+    overflow: hidden;
+    z-index: 1;
+    position: relative;
+}
+/* 全屏图表 */
+.screenMask {
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 99;
+    display: none;
+    background: rgba(0,0,0,0.8);
+}
+.fullEchartWarpper {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    width: 100px;
+    display: none;
+    overflow: hidden;
+    transition: width 0.3s ease-in;
+    transform: translate(-50%, -50%);
+}
+.echartWarpper .fullScreen,
+.closeFullScreen {
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    z-index: 99;
+    cursor: pointer;
+}
+.closeFullScreen {
+    right: 20px;
+    top: 15px;
+}
+.fullScreen img, .closeFullScreen img {
+    width: 25px;
+    height: 25px;
+}
+.fullEchartWarpper .title{
+    margin-bottom: 0;
+    line-height: 50px;
+    font-size: 20px;
+    background:rgba(24, 115, 219, 0.7);
+    opacity:1;
+}
+.echartWarpper > p,
+.fullEchartWarpper >p {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 999;
+    transform: translate(-50%, -50%);
+    font-size: 20px;
+    font-weight: 550px;
+    display: none;
+    color: orangered;
+}
+.fullScreen img:hover ,
+.closeFullScreen img:hover{
+    transform: scale(1.2);
+}
+.echartWarpper .title {
+    margin-bottom: 0;
+}
+#dataEchart {
+    width: 100%;
+    height: 290px;
+}
+#fullDataEchart {
+    width: 80vw;
+    height: 70vh;
+    background: rgba(31,59,107,0.7);
+}
+.lightStatus {
+    width: 350px;
+    height: 100px;
+    color: #fff;
+    background: url('../img/infoBorder.png') no-repeat;
+    background-size: 100% 100%; 
+}
+.lightStatus .title{
+    margin-bottom: 0;
+}
+.lightStatus ul {
+    display: flex;
+    width: 100%;
+    height: 40px;
+    padding-left: 20px;
+    box-sizing: border-box;
+    justify-content: space-around;
+}
+.lightStatus ul li {
+    position: relative;
+    text-align: center;
+    line-height: 40px;
+}
+.lightStatus ul li span {
+    position: absolute;
+    top: 10px;
+    left: -25px;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+}
+
+.lightStatus ul li:nth-child(1) span {
+    background: #32cd32;
+    box-shadow: 0 0 10px 2px #32cd32;
+}
+.lightStatus ul li:nth-child(2) span {
+    background: #fff;
+    box-shadow: 0 0 5px 2px #fff;
+}
+.lightStatus ul li:nth-child(3) span {
+    background: #666;
+    box-shadow: 0 0 10px 2px #666;
+}
+.lightStatus ul li:nth-child(1) span:hover,
+.lightStatus ul li:nth-child(2) span:hover,
+.lightStatus ul li:nth-child(3) span:hover{
+    animation: flashLight 0.5s infinite linear;
+}
+@keyframes flashLight{
+    0%{ opacity: 1;transform: scale(1);}
+    25%{ opacity: 0.5;transform: scale(0.9);}
+    50%{ opacity: 0.2;transform: scale(0.8);}
+    75%{ opacity: 0.5;transform: scale(0.9);}
+    100%{ opacity: 1;transform: scale(1);}
+}
+/* 预警信息 */
+.warnMsg1 {
+    z-index: 4;
+    width: 350px;
+    height: 321px;
+    color: #eee;
+}
+.warnMsg1 table{
+    opacity: 0.8;
+    text-align: center;
+    padding: 5px;
+    border-spacing: 0;
+}
+.warnMsg1 table th {
+    width: 100px;
+    font-size: 12px;
+    font-weight: normal;
+    line-height: 28px;
+    background:rgba(112,167,255,0.8);
+}
+.warnMsg1 table td{
+    width: 90px;
+    height: 40px;
+    font-size: 14px;
+    color: orange;
+}
+.warnMsg1 table tr:nth-child(2n){
+    background:rgb(23,91,128);
+}
+.warnMsg1 table tr:nth-child(2n+1){
+    background:rgb(13,51,88);
+}
+/* 数据采集频率 */
+.getDataInfo {
+    width: 350px;
+    height: 167px;
+    padding-right: 10px;
+    z-index: 4;
+}
+.getDataInfo .title {
+    margin-bottom: 0;
+}
+.getDataInfo ul {
+    padding: 5px 10px;
+    box-sizing: border-box;
+}
+.getDataInfo ul li {
+    color: #fff;
+    font-size: 16px;
+    height:35px;
+    line-height: 35px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+#times,#h24MaxValue, #d15MaxValue,
+#h24Speed, #d15Speed  {
+    font-size: 16px;
+    font-weight: 550;
+}
+
+/* 群组切换按钮 */
+.pilelist {
+    width: 100%;
+    position: fixed;
+    bottom:0px;
+    left: 0;
+    background: #333;
+    z-index: 999;
+    border-top: 2px solid #1D808B;
+    box-sizing: border-box;
+}
+.pilelist ul {
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    margin: 0 auto;
+}
+.pilelist ul li {
+    color: #f5f5f5;
+    text-align: center;
+    padding: 13px 5px;
+    font-size: 16px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    border: 1px solid #0faaf8;
+    border-radius: 8px;
+    background-color: #444;
+    margin-right: 5px;
+    box-sizing: border-box;
+    box-shadow: 0 7px 0px 0px #666;
+    transition: all 0.2s linear;
+}
+.pilelist ul li:hover {
+    background: rgba(31,59,107);
+    z-index: 99;
+}
+.key-down {
+    box-shadow: 0 2px 0px 0px #666 !important;
+    transform: translateY(5px) !important;
+}
+.key-up {
+    box-shadow: 0 7px 0px 0px #666 !important;
+    transform: translateY(0) !important;
+}
+.selected {
+    background: #3299cc !important;
+}
+.theme {
+    position: fixed;
+    left: 50%;
+    top: 75px;
+    display: flex;
+    color: #fff;
+    width: 200px;
+    transform: translateX(-50%);
+    opacity: 0;
+    justify-content: space-around;
+}
+.theme li {
+    background: rgba(225,225,225,.5);
+    text-align: center;
+    width: 80px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2px solid #eee;
+    line-height: 30px;
+    cursor: pointer;
+}
+.theme li:hover {
+    background: rgba(31,59,107, 0.5);
+}
+
+#loading{
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+}
+#loading span {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-top: -80px;
+    margin-left: -40px;
+    color: orange;
+}

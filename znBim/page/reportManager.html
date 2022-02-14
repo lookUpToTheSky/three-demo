@@ -1,0 +1,381 @@
+<!DOCTYPE>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>数据对比</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/common.css">
+
+    <script type="text/javascript" src="../lib/three.min.js"></script>
+    <script type="text/javascript" src="../lib/OrbitControls.js"></script>
+    <script type="text/javascript" src="../lib/OBJLoader.js"></script>
+    <script type="text/javascript" src="../lib/stats.js"></script>
+
+    <script type="text/javascript" src="../lib/CopyShader.js"></script>
+    <script type="text/javascript" src="../lib/EffectComposer.js"></script>
+    <script type="text/javascript" src="../lib/RenderPass.js"></script>
+    <script type="text/javascript" src="../lib/ShaderPass.js"></script>
+    <script type="text/javascript" src="../lib/OutlinePass.js"></script>
+    <script type="text/javascript" src="../lib/SMAAShader.js"></script>
+    <script type="text/javascript" src="../lib/SMAAPass.js"></script>
+    <script type="text/javascript" src="../lib/LuminosityHighPassShader.js"></script>
+    <script type="text/javascript" src="../lib/UnrealBloomPass.js"></script>
+
+    <script type="text/javascript" src="../lib/jquery.min.js"></script>
+    <script type="text/javascript" src="../lib/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../lib/echarts.min.js"></script>
+    <script type="text/javascript" src="../js/canvasView.js"></script>
+    <style>
+        .content {
+            background: url('../image/dataCompare.png') no-repeat;
+            background-size: 100% 100%;
+        }
+
+        #uploader {
+            margin: 0 auto;
+            width: 100%;
+            min-height: 60px;
+            float: left;
+        }
+
+        .from-span {
+            font-size: 14px;
+            margin: 5px 0 5px 0;
+            font-weight: bold;
+        }
+
+        .file-btn {
+            color: #fff;
+            background-color: #32c5d2;
+            position: relative;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .file-btn>input[type=file] {
+            width: 100%;
+            position: absolute;
+            top: 0;
+            right: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .active {
+            background: #32c5d2;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body onload="init()">
+    <div class="container-fluid pl-0 bg-black w-100 vh-100">
+        <section class="w-100 vh-100 p-4">
+            <div class="block-center alert alert-success w-25 text-center" style="top: 50px; display: none" role="alert">
+            </div>
+            <div class="block-center alert alert-warning w-25 text-center" style="top: 50px; display: none" role="alert">
+            </div>
+            <div class="content d-flex flex-column  h-100 p-3">
+                <h6 class="text-hightBule">报表管理</h6>
+                <div class="text-bule m-2">
+                    <form id="uploadForm" class="row d-flex" enctype="multipart/form-data">
+                        <span class="d-flex col p-2 align-items-center">
+                            <label class="ellipsis mb-0">所属企业及单位：</label>
+                            <select class="form-control btn-outline-info bg-black" style="flex: 1">
+                                <option value="1">中南大学体育馆</option>
+                            </select>
+                        </span>
+                        <span class="d-flex col p-2 align-items-center">
+                            <label class="ellipsis mb-0">监测项目：</label>
+                            <select class="form-control btn-outline-info bg-black" id="project" style="flex: 1">
+                                <option value="1">中南大学体育馆主馆</option>
+                            </select>
+                        </span>
+                        <span class="d-flex col p-2 align-items-center">
+                            <label class="ellipsis mb-0">文件类型：</label>
+                            <select id="rtGrade" class="form-control btn-outline-info bg-black" style="flex: 1">
+                                <option value="0">日报</option>
+                                <option value="1">周报</option>
+                                <option value="2">月报</option>
+                                <option value="3">年报</option>
+                            </select>
+                        </span>
+                        <div class="d-flex col p-2 align-items-center">
+                            <span class="file-btn p-1">
+                                <span class="ellipsis">选择文件</span>
+                            <input id="file" name="file" type="file" onchange="selectedFile(this.files[0],this)">
+                            </span>
+                            <span class="file-name ellipsis pr-1 pl-1">未选择任何文件</span>
+                            <input type="button" id="upload" disabled class="p-1 btn btn-success" value="开始上传">
+                        </div>
+                        <span class="from-span col p-1">命名规范 例如：中南大学体育馆 2019年5月 周报 </span>
+                    </form>
+                </div>
+                <ul class="nav reportType" style="cursor: pointer">
+                    <li class="nav-item border-bottom text-light active p-2" data-index="0">日报表</li>
+                    <li class="nav-item border-bottom text-light p-2" data-index="1">周报表</li>
+                    <li class="nav-item border-bottom text-light p-2" data-index="2">月报表</li>
+                    <li class="nav-item border-bottom text-light p-2" data-index="3">年报表</li>
+                </ul>
+                <div class="p-1 overflow-auto" style="flex: 1">
+                    <input id="searchReport" type="text" autocomplete="off" class="form-control col-2 mb-4 mt-4 bg-black btn-outline-info text-light"
+                        placeholder="搜索">
+                    <table class="table col-12 table-md table-borderless table-striped w-100">
+                        <thead>
+                            <caption id="tableTitle" align="top" class="text-center text-danger">没有匹配到相关数据</caption>
+                            <tr class="text-bule bg-liver text-center">
+                                <th scope="col">
+                                    <h5 class="mb-0">#</h5>
+                                </th>
+                                <th scope="col">
+                                    <h5 class="mb-0">名称</h5>
+                                </th>
+                                <th scope="col">
+                                    <h5 class="mb-0">生成时间</h5>
+                                </th>
+                                <th scope="col">
+                                    <h5 class="mb-0">覆盖时间</h5>
+                                </th>
+                                <th scope="col">
+                                    <h5 class="mb-0">操作</h5>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-light" id="tableData">
+                            <!-- js-->
+                        </tbody>
+                    </table>
+                    <div id="pager">
+                        <nav class="d-flex text-bule justify-content-start align-items-center mt-4">
+                            <span class="pr-2 pageNote">显示第1到第13条记录，总共370条记录, 每页显示</span>
+                            <select id="pageSize" onchange="pageSizeChange()" class="form-control btn-outline-info bg-black mr-3 text-center" style="width: 70px">
+                                <option value="10" selected>10</option>
+                                <option value="20">20</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                            <button onclick="onJumpPage()" data-set="-1" class="btn btn-outline-info pl-3 pr-3">&laquo;</button>
+                            <button disabled id="firstEllipsis" class="btn pl-3 pr-3" style="display:none"><h6 class="m-0 text-info">···</h6></button>
+                            <ul class="btn m-0 p-0 d-flex" id="paging" onclick="onJumpPage()">
+
+                            </ul>
+                            <button disabled id="scondEllipsis" class="btn pl-3 pr-3"><h6 class="m-0 text-info">···</h6></button>
+                            <button onclick="onJumpPage()" data-set="1" class="btn btn-outline-info pl-3 pr-3">&raquo;</button>
+                            <span class="p-2">跳转到</span>
+                            <input type="text" value="" onchange="onJumpPage()" class="btn-outline-info bg-black text-center mr-2" style="width: 30px">
+                            <button class="btn btn-sm btn-info">确定</button>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <script>
+        let pmId = 4;
+        let curentTypeIndex = 0;
+        let current = 0,
+            pageSize = 10,
+            total = 0,
+            maxPageNum = 3;
+        let totalData = [];
+        let currentData = [];
+        let rtGrade = 1;
+        let formData = null;
+        //加载报表
+        function getReport() {
+            parent.getData('get', '/data/selectAllKxReportById', {
+                pmId,
+                rtGrade
+            }, 'jsonp').then((res) => {
+                total = res.length;
+                currentData = totalData = res;
+                JumpTo();
+            })
+        }
+        // 显示报表
+        function showData() {
+            let html = PagingHtml = '';
+            total = currentData.length;
+            currentData.forEach((item, i) => {
+                if (Math.floor(i / pageSize) <= current && Math.floor(i / pageSize) > current - 1) {
+                    let bg = i % 2 == 0 ? 'bg-secondLiver' : 'bg-liver'
+                    html +=
+                        `<tr class="${bg} text-center">
+                                <td><h6 class="mb-0 ellipsis">${i+1}</h6></td>
+                                <td class="d-flex justify-content-around">
+                                    <h6 class="mb-0 ml-1 mr-1 ellipsis">${item.rtName}</h6>
+                                </td>
+                                <td><h6 class="mb-0 ellipsis">${item.rtTime}</h6></td>
+                                <td><h6 class="mb-0 ellipsis">${item.edTime?item.edTime:'-'}</h6></td>
+                                <td><h6><a class="mb-0 ellipsis text-success" download href="http://zn.kexsci.com/data/outReport/rtId/${item.rtId}">下载</a></h6></td>
+                            </tr>`
+                }
+                if (i % pageSize == 0) {
+                    if (Math.ceil(i / pageSize) < maxPageNum &&
+                        Math.ceil(i / pageSize) >= maxPageNum - 3) {
+                        PagingHtml +=
+                            `<li class="btn btn-outline-info ${i==0?'active':''}">
+                                            <h6 class="m-0">${Math.ceil(i/pageSize)+1}</h6>
+                                        </li>`;
+                    } else {
+                        PagingHtml +=
+                            `<li style="width:0">
+                                            <h6 class="m-0">${Math.ceil(i/pageSize)+1}</h6>
+                                        </li>`;
+                    }
+                }
+            })
+            $('#tableData').html(html);
+            $('#paging').html(PagingHtml);
+            if (currentData.length > pageSize) {
+                $('#tableTitle').hide();
+                $('#pager').fadeIn();
+                $('.pageNote').text(
+                    `显示第${current*pageSize+1}到第${(current+1)*pageSize<total?(current+1)*pageSize: total}条记录，总共${total}条记录, 每页显示`
+                );
+            } else {
+                if (currentData.length <= 0) {
+                    $('#tableTitle').fadeIn();
+                }
+                $('#pager').fadeOut();
+            }
+        }
+        //改变每页显示数量
+        function pageSizeChange() {
+            pageSize = $('#pageSize option:selected').val() * 1;
+            if (total / pageSize < current) {
+                current = Math.ceil(total / pageSize) - 1;
+                maxPageNum = current + 3;
+            }
+            JumpTo();
+        }
+        // 跳转到下一页
+        function onJumpPage() {
+            if (!!event.target.value) {
+                current = event.target.value * 1 - 1;
+                current = current < 0 ? 0 : current;
+                current = current > total / pageSize ? Math.ceil(total / pageSize) - 1 : current;
+                event.target.value = current + 1;
+            } else {
+                let dataset = event.target.dataset.set * 1;
+                if (dataset) {
+                    if (current == 0 && dataset < 0 || current == Math.ceil(total / pageSize) - 1 && dataset > 0) {
+                        return false;
+                    }
+                    current += dataset;
+                } else {
+                    current = (event.target.innerText * 1 || event.target.children[0].innerText * 1) - 1;
+                }
+            }
+            maxPageNum = current + 3;
+            JumpTo();
+
+        }
+        //跳转后初始页
+        function JumpTo() {
+            maxPageNum = current == maxPageNum - 1 && current != Math.ceil(total / pageSize) - 1 ? maxPageNum + 1 :
+                maxPageNum;
+            maxPageNum = current == maxPageNum - 3 && current != 0 ? maxPageNum - 1 : maxPageNum;
+            if (maxPageNum > 3) {
+                $('#firstEllipsis').css('display', 'block');
+            } else {
+                $('#firstEllipsis').css('display', 'none');
+            }
+            if (maxPageNum >= Math.ceil(total / pageSize)) {
+                $('#scondEllipsis').css('display', 'none');
+            } else {
+                $('#scondEllipsis').css('display', 'block');
+            }
+            showData();
+            $('#paging').find('li.active').removeClass('active');
+            $('#paging li').eq(current).addClass('active');
+        }
+        //节流
+        function throttle(delay, fn) {
+            var timer = null;
+            return function (e) {
+                if (!timer) {
+                    timer = setTimeout(function () {
+                        fn(e.target.value);
+                        timer = null;
+                    }, delay)
+                }
+            }
+        }
+        //按报表名称模糊查询
+        function filterRepot(value) {
+            current = 0;
+            pageSize = 10;
+            total = 0;
+            maxPageNum = 3;
+            var temp = totalData.filter(item => {
+                return item.rtName.indexOf(value) > -1;
+            })
+            currentData = temp;
+            showData();
+        }
+        //切换报表类型
+        function changeType() {
+            current = 0;
+            pageSize = 10;
+            total = 0;
+            maxPageNum = 3;
+            if (!!event.target.dataset.index) {
+                $('.reportType').children().eq(curentTypeIndex).removeClass('active');
+                curentTypeIndex = event.target.dataset.index * 1;
+                $('.reportType').children().eq(curentTypeIndex).addClass('active');
+                rtGrade = curentTypeIndex + 1;
+                getReport();
+            }
+        }
+        //选择文件
+        function selectedFile(file) {
+            formData = null;
+            formData = new FormData();
+            $('.file-name').eq(0).text('已选择文件（' + file.name + '）');
+            let rtGrade = $('#rtGrade option:selected').val() * 1 + 1;
+            $('#upload').attr('disabled', false);
+            formData.append('file', file);
+            formData.append('recover', 0);
+            formData.append('rtName', file.name);
+            formData.append('orId', 1003);
+            formData.append('pmId', pmId);
+            formData.append('rtGrade', rtGrade);
+        }
+        //上传文件
+        function updatedReport() {
+            parent.getData('post', '/data/uploadKxReport', formData, 'json', false, false).then(res => {
+                $('.file-name').eq(0).text('未选择文件');
+                if (res.code === 1) {
+                    console.log('res.msg');
+                    $('.alert').eq(0).text(res.msg);
+                    $('.alert').eq(0).show();
+                    setTimeout(() => {
+                        $('.alert').eq(0).fadeOut('slow');
+                    }, 2000);
+                    getReport();
+                } else if (res.code === 0) {
+                    $('.alert').eq(1).text('上传失败！');
+                    $('.alert').eq(1).show();
+                    setTimeout(() => {
+                        $('.alert').eq(1).fadeOut('slow');
+                    }, 2000);
+                }
+                $('#upload').attr('disabled', true);
+            })
+        }
+        // 入口
+        function init() {
+            getReport();
+            $('#searchReport').bind('input', throttle(200, filterRepot));
+            $('.reportType').eq(0).bind('click', changeType);
+            $('#upload').bind('click', throttle(500, updatedReport))
+        }
+    </script>
+</body>
+
+</html>

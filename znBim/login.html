@@ -1,0 +1,231 @@
+<!doctype html>
+<html class="fixed">
+
+<head>
+    <!-- Basic -->
+    <meta charset="UTF-8">
+    <title>欢迎登录</title>
+    <meta name="keywords" content="HTML5 Admin Template" />
+    <meta name="description" content="kexsci - Responsive HTML5 Template">
+    <meta name="author" content="okler.net">
+    <link rel="shortcut icon" href="./image/icon.png" type="image/x-icon">
+    <!-- Mobile Metas -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <!-- Vendor CSS -->
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/common.css">
+
+    <script type="text/javascript" src="./lib/jquery.min.js"></script>
+    <script type="text/javascript" src="./lib/Popper.min.js"></script>
+    <script type="text/javascript" src="./lib/bootstrap.min.js"></script>
+    <script type="text/javascript" src="./lib/cookies.js"></script>
+    <script type="text/javascript" src="./js/baseUrl.js"></script>
+    <style>
+        .bg-login-img {
+            background: url('./image/bj.jpg') no-repeat;
+            background-size: 100% 100%;
+            background-position: center; 
+        }
+        .bg-opacity {
+            background: rgba(22, 123, 223, .3);
+            box-shadow: 0 5px 110px 55px rgb(21, 51, 77);
+        }
+        .title-img {
+            top: 0;
+            left: 0;
+            transform: translateY(calc(-50% + 40px));
+        }
+        .bg-box {
+            background: url('./image/login-bg.png') no-repeat;
+            background-size: 100% 100%;
+            background-position: center; 
+        }
+        .rotate {
+            animation: rotate 10s cubic-bezier(0.25,0.1,0.25,1) infinite;
+        }
+        @keyframes rotate{
+            0% {
+                transform: rotateZ(0deg);
+            }75% {
+                transform: rotateZ(360deg);
+            }100% {
+                transform: rotateZ(360deg);
+            }
+        }
+    </style>
+</head>
+<body class="bg-login-img text-light vh-100 row d-flex justify-content-center align-items-center p-3">
+    <!-- start: page -->
+    <section class="col-xs-12 col-sm-6 col-md-4 col-lg-3 rounded bg-box">
+        <div id="tipInfo" 
+            class="alert bg-gradients shadow-lg text-center fixed-top m-auto" 
+            role="alert" style="width: 160px; top: 5%; display: none;">请输入用户名！</div>
+        <div class="pl-4 pr-4 pb-0 pt-0">
+            <div class="panel panel-sign position-relative">
+                <div class="text-center position-absolute w-100" style="top: -160px;">
+                    <img src="./image/earth.png" class="rotate" width="180px" height="180px" alt="">
+                </div>
+                <div class="title position-relative" style="pointer-events: none;">
+                    <h3 class="mt-2 text-center">欢迎登录</h3>
+                    <img src="./image/head.gif" class="title-img position-absolute" width="100%" height="300px" alt="" srcset="">  
+                </div>
+                <div class="panel-body mt-4">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-black text-info  border-info" id="basic-addon2">
+                                    <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-person-fill" fill="#00F6FF" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                                    </svg>
+                                </span>
+                            </div>
+                            <input name="userAccount" autofocus="autofocus" type="text" autocomplete="off" placeholder="请输入用户名" 
+                            class="bg-black border-info text-info form-control" id="userAccount" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="d-flex justify-content-end mb-1">
+                            <a href="javascript:;" data-toggle="popover" data-placement="right" data-content="请联系项目负责人！">
+                               <small>忘记密码?</small>
+                            </a>
+                        </div>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-black border-info" id="basic-addon2">
+                                    <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-lock-fill" fill="#00F6FF" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M2.5 9a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-7a2 2 0 0 1-2-2V9z"/>
+                                        <path fill-rule="evenodd" d="M4.5 4a3.5 3.5 0 1 1 7 0v3h-1V4a2.5 2.5 0 0 0-5 0v3h-1V4z"/>
+                                    </svg>
+                                </span>
+                            </div>
+                            <input name="userpassword"  
+                            type="password" placeholder="请输入密码" 
+                            class="bg-black text-info form-control border-info" id="userpassword" />
+                            
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-8 mt-2"> 
+                            <input id="RememberMe" name="CookieDate" type="checkbox" value="1" />
+                            <small for="RememberMe">记住密码</small>
+                        </div>
+                        <div class="col-4 text-right">
+                            <button type="submit" class="btn btn-outline-info" onclick="submitLogin()">
+                                <span id="loadIcon" style="display: none" class="spinner-border spinner-border-sm" role="status"></span>
+                                登录
+                            </button>
+                        </div>
+                    </div>
+                    <div class="m-1 mt-3 text-center text-uppercase d-flex align-items-center">
+                        <div class="w-50 border-bottom border-info"></div>
+                        <div class="pl-2 pr-2 text-info">or</div>
+                        <div class="w-50 border-bottom border-info"></div>
+                    </div>
+                    <h6 class="text-center text-muted">还没有账户? 请向业务负责人申请!</h6>
+                </div>
+            </div>
+            <p class="text-center text-info"> 
+                <text id="copyright">&copy; Copyright</text>
+                <small>2017-<small id="year"></small>.</small>
+                <small id="companyAbbreviation">科形监测.</small>
+            </p>
+        </div>
+    </section>
+    <script>
+        $(function () {
+            var check = $("input[type='checkbox']").attr('checked', Cookies.get('checked'));
+            if (check) {
+                $("#userAccount").val(Cookies.get("userAccount"));
+                $("#userpassword").val(Cookies.get("userpassword"));
+            }
+            $("#year").text(new Date().getFullYear());
+            $("[data-toggle='popover']").popover();
+        })
+        function submitLogin() {
+            var userAccount = $("#userAccount").val();
+            var userpassword = $("#userpassword").val();
+            if (userAccount == "") {
+                $.msg("请输入账号!");
+                return false;
+            }
+            if (userpassword == "") {
+                $.msg("请输入密码!");
+                return false;
+            }
+            const params = {
+                "userAccount": userAccount,
+                "userPassword": userpassword
+            };
+            sendLoginRequest(params);
+        }
+        $.msg = function message(message) {
+            $('#tipInfo').text(message);
+            $('#tipInfo').fadeIn();
+            setTimeout( () => {
+                $('#tipInfo').fadeOut();
+            }, 2000)
+        }
+        $(window).keydown(function (event) {
+            if (event.keyCode == 13) {
+                submitLogin();
+            }
+        });
+        function sendLoginRequest(params) {
+            $("#loadIcon").fadeIn();
+            getData("POST", "/login",  params).then( (data) => {
+                var code = data.code;
+                if (code == 500 || code == 501 ) {
+                    $.msg(data.message);
+                } else if (code == 502) {
+                    $.msg("账号被禁用,请联系管理员!");
+                } else if (code == 250) {
+                    $.msg("未知的错误");
+                } else if (code == 200) {
+                    //用户信息获取
+                    getData("GET", "/getSessionInfo", {"userAccount": params.userAccount}).then( (res) => {
+                            sessionStorage.setItem('userAccount', res.userAccount);
+                            sessionStorage.setItem('userId', res.userId);
+                            sessionStorage.setItem('opId', res.opId);
+                            sessionStorage.setItem('orId', res.orId);
+                            $("#loadIcon").fadeOut();
+                            location.href = "./main.html";
+                            saveUserInfo();
+                        })
+                }
+            })
+        }
+        function saveUserInfo() { //在登入的时候调用此方法
+            var checked = $("input[type='checkbox']").is(':checked');
+            if (checked) {
+                Cookies.set("checked", checked, {
+                    expires: 60 * 60 * 24
+                }, {
+                    path: window.location.href
+                }); //域名
+                Cookies.set("userAccount", $("#userAccount").val(), {
+                    expires: 60 * 60 * 24
+                }, {
+                    path: window.location.href
+                });
+                Cookies.set("userpassword", $("#userpassword").val(), {
+                    expires: 60 * 60 * 24
+                }, {
+                    path: window.location.href
+                });
+            } else {
+                Cookies.set("checked", '', {
+                    expires: -1
+                }); // 删除 cookie
+                Cookies.set("userAccount", '', {
+                    expires: -1
+                });
+                Cookies.set("userpassword", '', {
+                    expires: -1
+                });
+            }
+        }
+    </script>
+</body>
+
+</html>

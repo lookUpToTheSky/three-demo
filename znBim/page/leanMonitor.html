@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>倾斜</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/swiper.min.css">
+
+    <script type="text/javascript">let THREE = parent.THREE;</script>
+    <script type="text/javascript" src="../lib/OrbitControls.js"></script>
+    <script type="text/javascript" src="../lib/OBJLoader.js"></script>
+    <script type="text/javascript" src="../lib/stats.js"></script>
+    <script type="text/javascript" src="../lib/onEvent.js"></script>
+
+    <script type="text/javascript" src="../lib/CopyShader.js"></script>
+    <script type="text/javascript" src="../lib/EffectComposer.js"></script>
+    <script type="text/javascript" src="../lib/RenderPass.js"></script>
+    <script type="text/javascript" src="../lib/ShaderPass.js"></script>
+    <script type="text/javascript" src="../lib/OutlinePass.js"></script>
+    <script type="text/javascript" src="../lib/SMAAShader.js"></script>
+    <script type="text/javascript" src="../lib/SMAAPass.js"></script>
+    <script type="text/javascript" src="../lib/LuminosityHighPassShader.js"></script>
+    <script type="text/javascript" src="../lib/UnrealBloomPass.js"></script>
+
+    <script type="text/javascript" src="../lib/jquery.min.js"></script>
+    <script type="text/javascript" src="../lib/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../lib/swiper.min.js"></script>
+    <script type="text/javascript" src="../lib/echarts.min.js"></script>
+    <script type="text/javascript" src="../js/canvasView.js"></script>
+    <script type="text/javascript" src="../lib/laydate.js"></script>
+    <style>
+        .pageLeft .content1 {
+            background: url('../image/leanBg1.png') no-repeat;
+            background-size: 100% 100%;
+        }
+        .pageRight .content1,
+        .pageLeft .content2 {
+            background: url('../image/bg-img.png') no-repeat;
+            background-size: 100% 100%;
+        }
+        #topFrame, #topPillar,
+        #topPillarModel,#topFrameModel {
+            position: relative;
+            overflow: hidden;
+        }
+        .lean-info li {
+            width: 60px;
+            line-height: 35px;
+            border-radius: 50;
+            text-align: center;
+            position: absolute;
+            transition: all 0.5s;
+            border: 2px solid rgba(0,0,0,0);
+            cursor: pointer;
+            box-sizing: border-box;
+            transition: all .2s;
+            font-weight: bold;
+            color: #7fff00;
+        }
+        .lean-info li.senName {
+            font-size: 12px;
+            color: orange;
+        }
+        .lean-info li.senName:hover {
+            font-size: 12px;
+            color: orange;
+        }
+        .lean-info li:hover {
+            font-size: 22px;
+            color: #00F6FF;
+        }
+        .lean-info li > p {
+            padding: 0;
+            margin: 0;
+            line-height: 14px;
+            font-size: 10px;
+        }
+        .swiper-pagination-bullet {
+            background: #00F6FF;
+        }
+       /* 传感器信息 */
+        .info {
+            position: absolute;
+            width: 150px;
+            height: 130px;
+            user-select: none;
+        }
+        .info:hover ul, .info:hover .light,
+        .info:hover li::after
+        {
+            cursor: pointer;
+            z-index: 999;
+            color: #00F6FF;
+            border-color: #00F6FF;
+        }
+        .info ul {
+            position: relative;
+            width: 150px;
+            padding: 5px;
+            height: 30px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #38b0de;
+            background: rgba(0,0,0,.6);
+            border: 2px solid #38b0de; 
+            border-radius: 10px;
+        }
+        .info ul li {
+            width: 100%;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+            text-align: center;
+        }
+        .info ul li::after {
+            content: "";
+            width: 10px;
+            height: 10px;
+            border: 2px solid #00F6FF;
+            border-width: 0 2px 2px 0; 
+            position: absolute;
+            left: 67.5px;
+            bottom: -7px;
+            transform: rotateZ(45deg);
+        }
+        .info ul:hover {
+            width: auto;
+        }
+        .info .light {
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 80px;
+            border-radius: 50px;
+            display: flex;
+            border-radius: 50px;
+            align-items: center;
+            justify-content: center;
+        }
+        .light div {
+            width: 80px;
+            height: 80px;
+            border-radius: 50px;
+            animation: lightFlash 2s linear infinite;
+            background: radial-gradient(#fff, green);
+        }
+    </style>
+</head>
+<body onload="init()">
+    <div class="container-fluid pl-0 bg-black w-100 vh-100">
+        <div id="carouselExampleControls" data-interval="false" class="carousel slide w-100" data-ride="carousel">
+            <div class="carousel-inner w-100">
+                <!-- 短柱倾斜 -->
+                <div class="carousel-item active w-100">
+                    <div class="row m-0 w-100">
+                        <section class="col-6 col-sm-6 col-md-8 col-lg-8 p-0">
+                            <div class="pageLeft pl-4 pr-1">
+                                <ul class="d-flex flex-column justify-content-start text-light vh-100">
+                                    <li class="d-flex pt-4 pb-4" style="height: 10%">
+                                        <button type="button" href="#carouselExampleControls" role="button" data-slide-to="0" class="btn btn-info">短柱倾斜</button>
+                                        <button type="button" href="#carouselExampleControls" role="button" data-slide-to="1" class="btn btn-outline-info ml-2">桁架倾斜</button>
+                                    </li>
+                                    <li style="height: 0%">
+                                        <ul id="frameBtn1" class="farme-wrapper d-flex align-items-center justify-content-center">
+                                            <!-- <li><button class="btn btn-sm btn-primary">第三榀</button> </li>
+                                            <li><button class="btn btn-sm btn-primary">第六榀</button></li> -->
+                                        </ul>
+                                    </li>
+                                    <li class="mt-2 pb-2" style="height: 55%">
+                                        <div class="content1 d-flex flex-column p-2 h-100">
+                                            <h6 class="text-hightBule">
+                                                <img src="../image/row.png" width="14" height="14" alt="" srcset="">
+                                                实时短柱水平倾斜数据大图
+                                            </h6>
+                                            <div class="frameSelecte d-flex justify-content-center text-hightBule">
+                                                <span>第</span>
+                                                <span id="frameIndex">3</span>
+                                                <span>榀短柱倾斜数据</span>
+                                            </div>
+                                            <div id="topPillar" style="flex: 1">
+                                                <ul class="lean-info">
+                                                    
+                                                    <li></li>
+                                                    <li></li>
+                                                    <li></li>
+                                                    <li></li>
+                                                    <li></li>
+                                                    <li></li>
+                                                    <li></li>
+                                                    <li></li>
+
+                                                    <li></li>
+                                                    <li style="width: 200px">短柱倾斜示意图</li>
+
+                                                    <li class="senName">0</li>
+                                                    <li class="senName">0</li>
+                                                    <li class="senName">0</li>
+                                                    <li class="senName">0</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </li> 
+                                    <li class="pt-2 pb-2" style="height: 35%">
+                                        <div class="content2 d-flex flex-column p-2 h-100">
+                                            <h6 class="text-hightBule">
+                                                <img src="../image/column.png" width="14" height="14" alt="" srcset="">
+                                                单榀桁架三维模型
+                                            </h6>
+                                            <div id="topPillarModel" style="flex: 1">
+                                                <div class="sensorInfo">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </section>
+                        <section class="col-6 col-sm-6 col-md-4 col-lg-4 p-0">
+                            <div class="pageRight p-2 vh-100">
+                                <ul class="d-flex flex-column justify-content-start text-light h-100">
+                                    <li class="h-100">
+                                        <div id="echartsWrap1" class="content1 d-flex flex-column p-3 h-100 overflow-hidden">
+                                            <h6 class="text-hightBule pl-4">实时倾斜数据</h6>
+                                            <div id="wrap-item" class="pl-4 d-flex align-items-center flex-wrap border-bottom border-info">
+                                                <label class="text-hightBule">时间：</label>
+                                                <select id="timeDuration" class="btn btn-outline-info bg-black"  onchange="onSelectedTime()">
+                                                    <option value="0">最近一小时</option>
+                                                    <option value="1" selected>最近一天</option>
+                                                    <option value="2">最近一周</option>
+                                                    <option value="3">最近一月</option>
+                                                    <option value="4">其它</option>
+                                                </select>
+                                                <div id="rangeTime" class="pl-3 mt-2" style="display: none">
+                                                    <input 
+                                                        type="text" 
+                                                        style="width: 130px; font-size: 12px" 
+                                                        id="startTime" 
+                                                        class="btn btn-outline-info btn-sm bg-black" 
+                                                        autocomplete="off"
+                                                        placeholder="开始时间"/>
+                                                    <span>至</span>
+                                                    <input 
+                                                        type="text" 
+                                                        style="width: 130px; font-size: 12px" 
+                                                        id="endTime" 
+                                                        autocomplete="off"
+                                                        class="btn btn-outline-info btn-sm bg-black" 
+                                                        placeholder="结束时间" /> 
+                                                    <button id="search" class="btn btn-info btn-sm ml-2" disabled onclick="sendEchartRequest()">查询</button>
+                                                </div>
+                                                <select id="lineType" class="btn btn-outline-info bg-black ml-3 m-2" onchange="onChangeLineType()">
+                                                    <option value="0" selected>原始曲线</option>
+                                                    <option value="1">优化曲线</option>
+                                                </select>
+                                            </div>
+                                            <div class="pt-2 position-relative" style="flex: 1">
+                                                <div id="dataEchart1" class="w-100 h-100"></div>
+                                                <div id="loading" class="position-absolute text-center">
+                                                    <span class="spinner-border text-primary" role="status">
+                                                    </span>
+                                                    <div class="text-primary">Loading...</div>
+                                                </div>
+                                            </div>
+                                            <div class="pt-2 position-relative" style="flex: 1">
+                                                <div id="dataEchart2" class="w-100 h-100"></div>
+                                                <div id="loading2" class="position-absolute text-center">
+                                                    <span class="spinner-border text-primary" role="status">
+                                                    </span>
+                                                    <div class="text-primary">Loading...</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li> 
+                                </ul>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+                <!-- 桁架倾斜 -->
+                <div class="carousel-item w-100">
+                    <div class="row m-0 w-100">
+                        <section class="col-6 col-sm-6 col-md-8 col-lg-8 p-0">
+                            <div class="pageLeft pl-4 pr-1">
+                                <ul class="d-flex flex-column justify-content-start text-light vh-100">
+                                    <li class="d-flex pt-4 pb-4" style="height: 10%">
+                                        <button type="button" href="#carouselExampleControls" role="button" data-slide-to="0" class="btn btn-outline-info">短柱倾斜</button>
+                                        <button type="button" href="#carouselExampleControls" role="button" data-slide-to="1" class="btn btn-info ml-2">桁架倾斜</button>
+                                    </li>
+                                    <li style="height: 0%">
+                                        <ul id="frameBtn2" class="farme-wrapper d-flex align-items-center justify-content-center">
+                                        </ul>
+                                    </li>
+                                    <li class="mt-2 pb-2" style="height: 55%">
+                                        <div class="content1 d-flex flex-column p-2 h-100">
+                                            <h6 class="text-hightBule">
+                                                <img src="../image/row.png" width="14" height="14" alt="" srcset="">
+                                                实时桁架水平倾斜数据大图
+                                            </h6>
+                                            <div class="frameSelecte d-flex justify-content-center text-hightBule">
+                                                <span>第</span>
+                                                <span id="frameIndex">13</span>
+                                                <span>榀桁架倾斜数据</span>
+                                            </div>
+                                            <div id="topFrame" style="flex: 1">
+                                                <ul class="lean-info">
+                                                    <li> <p></p> <p></p> <p></p></li>
+                                                    <li> <p></p> <p></p> <p></p></li>
+                                                    <li> <p></p> <p></p> <p></p></li>
+                                                    <li> <p></p> <p></p> <p></p></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </li> 
+                                     <li class="pt-2 pb-2" style="height: 35%"> <!--35% -->
+                                        <div class="content2 d-flex flex-column p-2 h-100">
+                                            <h6 class="text-hightBule">
+                                                <img src="../image/column.png" width="14" height="14" alt="" srcset="">
+                                                第13榀桁架三维模型
+                                            </h6>
+                                            <div id="topFrameModel" style="flex: 1">
+                                                <div class="sensorInfo">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </section>
+                        <section class="col-6 col-sm-6 col-md-4 col-lg-4 p-0">
+                            <div class="pageRight p-2 vh-100">
+                                <ul class="d-flex flex-column justify-content-start text-light h-100">
+                                    <li class="h-100">
+                                        <div id="echartsWrap2" class="content1 d-flex flex-column p-3 h-100 overflow-hidden">
+                                            <h6 class="text-hightBule pl-4">实时倾斜数据</h6>
+                                        </div>
+                                    </li> 
+                                </ul>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>   
+    </div>
+    <script>
+        let camera1, scene1, renderer1, controls1, stats, composer;
+        let camera2, scene2, renderer2, controls2;
+        let camera3, scene3, renderer3, controls3;
+        let camera4, scene4, renderer4, controls4;
+        var webSocket = null, lastWSData = [];
+        let getEchartsTimer = null;//定时获取ecahrts数据
+        let swiper = null,echartDom, echart, echartStartTime, echartEndTime;
+        let series1 = [], series2 = [];//series1原始数据， series2优化数据
+        let currentFrame = 0;
+        let currentSensor = null;
+        let currentPage = 0;
+        var linkSensorLine = new THREE.Group();
+        let frame = null;
+        let threeView1 = $('#topPillar');
+        let threeView2 = $('#topPillarModel');
+        let threeView3 = $('#topFrame');
+        let threeView4 = $('#topFrameModel');
+        let frameList = [], pillarList  = [];
+        let gpId = 49;
+        let spCode = 61;
+        let objLoader = new THREE.OBJLoader();
+        let mtlLoader = new THREE.MTLLoader();
+        let infoPillarArr = [
+            {x:-132, y: 0, z:-20},{x:-110, y: 0, z:-42},
+            {x:-130, y: 0, z:20},{x:-110, y: 0, z:40},
+            {x:69, y: 0, z:-20},{x:50, y: 0, z:-42},
+            {x:70, y: 0, z:20},{x:50, y: 0, z:40},
+
+            {x:133, y: 0, z:-45},
+            {x:96, y: 0, z:45},
+
+            {x:-112, y: 0, z:-22},
+            {x:-112, y: 0, z: 18},
+            {x:48, y: 0, z: -22},
+            {x:48, y: 0, z: 18},
+            {x:48, y: 0, z: -22},
+            ];
+        let infoFrameArr = [{x:-90, y: 0, z:58},{x:-30, y: 0, z:58},{x: 30, y: 0, z:58},{x:90, y: 0, z:58}]
+        var sensorList = [
+            {node:null,data:null,senName:'CX3P-01,CX6P-01'},{node:null,data:null,senName:'CX3P-02,CX6P-02'}, 
+            {node:null,data:null,senName:'CX3P-03,CX6P-03'},{node:null,data:null,senName:'CX3P-04,CX6P-04'}]
+        var sensorList1 = [
+            {node:null,data:null,senName:'QX-13-1'}, {node:null,data:null,senName:'QX-13-2'},
+            {node:null,data:null,senName:'QX-13-3'}, {node:null,data:null,senName:'QX-13-4'}
+        ]
+        //时间格式化函数添加到Date原型链上
+        let option1, option2, userData1 = [], userData2 = [];
+        //时间格式化函数添加到Date原型链上
+	    Date.prototype.Format = timeFormat;
+        let chartOption = {
+                title: {text: '',x: 'center', textStyle: { color: "#fff" }},
+                color: ['#52FFFF','#FFAE00','#e36159','#00ff7f','#bc1717',
+                '#0088cc','#ff7f00','#db7093','#b87333',
+                '#ff2400','#215e21','#ff00ff','#99cc32',
+                '#23238e','#5340cc'],
+                tooltip: {
+                    trigger: "axis"
+                },
+                legend: {
+                    data: [],
+                    x: 'center',
+                    y: 30,
+                    textStyle: {
+                        color: "#fff" //刻度颜色
+                    }
+                },
+                toolbox: {
+                    iconStyle: {
+                        borderColor: '#e36159',
+                    },
+                    y: 0
+                },
+                dataZoom: [{
+                    type: 'inside' ,
+                    start: 0,
+                    end: 100,
+                }],
+                grid: {
+                    top: 125,
+                    left: 55,
+                    right: 50,
+                    bottom: 65
+                },
+                xAxis: {
+                //x轴
+                type: "category",
+                name: '时间',
+                data: [],
+                boundaryGap: false,
+                axisLabel: {
+                    rotate: 30,
+                    textStyle: {
+                    color: "#fff" //刻度颜色
+                    }
+                },
+                axisTick: {
+                    show: false
+                },
+                axisLine: {
+                    lineStyle: {
+                        color: 'rgba(82,255,255,.5)'
+                    }
+                },
+                splitLine: {
+                    show: true,
+                    lineStyle: {
+                        color: 'rgba(82,255,255,.16)'
+                    }
+                }
+                },
+                yAxis: {
+                    //y轴
+                    type: "value",
+                    name: "",
+                    // min: 'dataMin',
+                    // scale: true,
+                    axisTick: {
+                        show: false
+                    },
+                    axisLabel: {
+                        textStyle: {
+                        color: "#fff", //刻度颜色
+                        fontSize: 14 //刻度大小
+                        }
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            color: 'rgba(82,255,255,.5)'
+                        }
+                    },
+                    splitLine: {
+                        show: true,
+                        lineStyle: {
+                            color: 'rgba(82,255,255,.16)'
+                        }
+                    }
+                },
+                series: []
+        }//ecahrt图表对象
+        //3D场景初始化
+        function initScene() {
+            camera1 = new THREE.PerspectiveCamera( 75, threeView1.width() / threeView1.height(), 1, 1000 );
+            THREE.onEvent(scene1, camera1,threeView1.width(), threeView1.height());//事件初始化
+            camera1.position.set( 0, 80, 0 ); 
+            camera1.lookAt(0,0,0);
+            scene1 = new THREE.Scene();
+            camera2 = new THREE.PerspectiveCamera( 75, threeView2.width() / threeView2.height(), 1, 1000 );
+            THREE.onEvent(scene2, camera2,threeView2.width(), threeView2.height());//事件初始化
+            camera2.position.set( 0, 200, 0 ); 
+            camera2.lookAt(0,0,0);
+            scene2 = new THREE.Scene();
+            camera3 = new THREE.PerspectiveCamera( 75, threeView3.width() / threeView3.height(), 1, 1000 );
+            THREE.onEvent(scene3, camera3,threeView3.width(), threeView3.height());//事件初始化
+            camera3.position.set( 0, 105, 0 ); 
+            camera3.lookAt(0,0,0);
+            scene3 = new THREE.Scene();
+            camera4 = new THREE.PerspectiveCamera( 30, threeView4.width() / threeView4.height(), 1, 1000 );
+            THREE.onEvent(scene4, camera4,threeView4.width(), threeView4.height());//事件初始化
+            camera4.position.set( 0, 30, 450 ); 
+            camera4.lookAt(0,0,0);
+            scene4 = new THREE.Scene();
+            let ambientLight = new THREE.AmbientLight( 0x888888, 2);
+            scene1.add( ambientLight );
+            scene3.add( ambientLight.clone() );
+            // 给场景添加一个平行光出来
+            let dirLight = new THREE.DirectionalLight( 0xffffff, 2);
+            dirLight.position.set( 1, 15, 50 );
+            dirLight.position.multiplyScalar( 30 );
+            scene2.add( dirLight );
+            scene4.add( dirLight.clone() );
+            //实例化一个渲染器s
+            renderer1 = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
+            renderer1.setPixelRatio( window.devicePixelRatio );
+            renderer1.setSize( threeView1.width(), threeView1.height());
+            // renderer.setClearColor( 0xffffff, 0.1);   
+            threeView1.append( renderer1.domElement );
+
+            renderer2 = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
+            renderer2.setPixelRatio( window.devicePixelRatio );
+            renderer2.setSize( threeView2.width(), threeView2.height());
+            threeView2.append( renderer2.domElement );
+
+            renderer3 = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
+            renderer3.setPixelRatio( window.devicePixelRatio );
+            renderer3.setSize( threeView3.width(), threeView3.height());
+            threeView3.append( renderer3.domElement );
+            renderer4 = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
+            renderer4.setPixelRatio( window.devicePixelRatio );
+            renderer4.setSize( threeView4.width(), threeView4.height());
+            threeView4.append( renderer4.domElement );
+            // //控制相机
+            controls1 = new THREE.OrbitControls( camera1, renderer1.domElement);
+            controls2 = new THREE.OrbitControls( camera2, renderer2.domElement);
+            controls3 = new THREE.OrbitControls( camera3, renderer3.domElement);
+            controls4 = new THREE.OrbitControls( camera4, renderer4.domElement);
+            controls1.enableZoom = true;
+            controls1.enableRotate = false;
+            controls2.enableZoom = true;
+            // controls2.enableRotate = false;
+            controls3.enableZoom = true;
+            controls3.enableRotate = false;
+            //设置相机移动距离
+            controls1.minDistance = 50;
+            controls1.maxDistance = 500;
+            controls2.minDistance = 100;
+            controls2.maxDistance = 500;
+            controls3.minDistance = 50;
+            controls3.maxDistance = 500;
+            controls4.minDistance = 100;
+            controls4.maxDistance = 500;
+            window.addEventListener( 'resize', onWindowResize, false );
+        }
+        //后期通道
+        function composerPass(renderer,scene, camera, threeView) {
+            composer = new THREE.EffectComposer(renderer);//通道组合器
+            var renderPass = new THREE.RenderPass( scene, camera );//渲染一个新环境
+            // 外边框outLine
+            var outLineColor = new THREE.OutlinePass( 
+                new THREE.Vector2( threeView.width(), threeView.height() ), scene, camera);
+            outLineColor.visibleEdgeColor.set( 'orangered' );
+            outLineColor.edgeStrength = 8;
+            //场景发光
+            var bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2( threeView.width(), threeView.height() ))
+            bloomPass.exposure =1;
+            bloomPass.threshold = 0;
+            bloomPass.strength = 1.5;
+            bloomPass.radius = 1;
+            bloomPass.enabled  = false;
+                
+            //抗锯齿SMAAShader
+            var SMAAShader= new THREE.SMAAPass( threeView.width(),  threeView.height() );
+            SMAAShader.renderToScreen = true;
+
+            composer.addPass( renderPass );
+            composer.addPass( bloomPass );
+            composer.addPass(outLineColor);
+            composer.addPass( SMAAShader );
+
+        }
+        //屏幕宽度监听
+        function onWindowResize() {
+            camera1.aspect = threeView1.width() /threeView1.height();
+            camera1.updateProjectionMatrix();
+            renderer1.setSize( threeView1.width(),threeView1.height() );
+            THREE.onEvent(scene1, camera1,threeView1.width(), threeView1.height());//事件初始化
+            camera2.aspect = threeView2.width() /threeView2.height();
+            camera2.updateProjectionMatrix();
+            renderer2.setSize( threeView2.width(),threeView2.height() );
+            THREE.onEvent(scene2, camera2,threeView2.width(), threeView2.height());//
+            
+            camera3.aspect = threeView3.width() /threeView3.height();
+            camera3.updateProjectionMatrix();
+            renderer3.setSize( threeView3.width(),threeView3.height() );
+            THREE.onEvent(scene3, camera3,threeView3.width(), threeView3.height());//事件初始化
+
+            camera4.aspect = threeView4.width() /threeView4.height();
+            camera4.updateProjectionMatrix();
+            renderer4.setSize( threeView4.width(),threeView4.height() );
+            THREE.onEvent(scene4, camera4,threeView4.width(), threeView4.height());//事件初始化
+        }
+        //初始化性能插件
+        function initStats() {
+            stats = new Stats();
+            document.body.appendChild(stats.dom);
+        }
+        //渲染
+        function animate() {
+            //更新性能插件
+            controls1.update();
+            // controls2.update();
+            renderer1.render(scene1, camera1);
+            renderer2.render(scene2, camera2);
+            renderer3.render(scene3, camera3);
+            renderer4.render(scene4, camera4);
+            renderSensorInfo();
+            // composer.render();
+            requestAnimationFrame(animate);
+        }
+
+        //footer图表
+        function getEchartData() {
+            echartDom1 = document.getElementById('dataEchart1');
+            echartDom2 = document.getElementById('dataEchart2');
+            echart1 = parent.echarts.init(echartDom1);
+            echart2 = parent.echarts.init(echartDom2);
+            //窗口变化改变图表大小
+            window.addEventListener('resize', function (e) {
+                echart1.resize();
+                echart2.resize();
+            }, false); 
+            echartEndTime = new Date().getTime();
+            echartStartTime = echartEndTime - 24*3600*1000;
+            echartEndTime = new Date(echartEndTime).Format('yyyy-MM-dd HH:mm:ss');
+            echartStartTime = new Date(echartStartTime).Format('yyyy-MM-dd HH:mm:ss');
+            //第一次加载
+            sendEchartRequest();
+            //第n次加载
+            getEchartsTimer = setInterval(function () {
+                sendEchartRequest();
+            }, 60000*10)	
+        }
+        function initTime() {
+            laydate.render({
+                elem: '#startTime',
+                theme: '#17a2b8',
+                type: 'datetime',
+                format: 'yyyy-MM-dd HH:mm:ss',
+                max: new Date().getTime(),
+                done: function(value, date, endDate){
+                    echartStartTime = value;
+                    if(echartEndTime) $('#search').removeAttr("disabled");
+                }
+            });
+            laydate.render({
+                elem: '#endTime',
+                theme: '#17a2b8',
+                type: 'datetime',
+                format: 'yyyy-MM-dd HH:mm:ss',
+                max: new Date().getTime(),
+                done: function(value, date, endDate){
+                    echartEndTime = value;
+                    if(echartStartTime) $('#search').removeAttr("disabled");
+                }
+            });
+        }
+        function onSelectedTime() {
+           const selectVal = $(event.target).val()*1;
+           const nowTime = new Date().getTime();
+           $("#lineType").val(0);
+           switch(selectVal) {
+                case 0: echartStartTime = nowTime - 3600*1000;
+                    $('#rangeTime').fadeOut();
+                    break;
+                case 1: echartStartTime = nowTime - 24*3600*1000;
+                    $('#rangeTime').fadeOut();
+                    break;
+                case 2:echartStartTime = nowTime - 7*24*3600*1000;
+                    $('#rangeTime').fadeOut();
+                    break;
+                case 3:echartStartTime = nowTime - 30*24*3600*1000;
+                    $('#rangeTime').fadeOut();
+                    break;
+                case 4: $('#rangeTime').fadeIn();
+                    echartStartTime = echartEndTime = '';
+                    echart1.resize();echart2.resize()
+                    return false;
+                    break;
+           }
+            echartStartTime = new Date(echartStartTime).Format('yyyy-MM-dd HH:mm:ss');
+            echartEndTime = new Date(nowTime).Format('yyyy-MM-dd HH:mm:ss');
+            sendEchartRequest();
+        }
+        function sendEchartRequest() {
+            if(getEchartsTimer) {
+                clearInterval(getEchartsTimer);
+                getEchartsTimer = null;
+            }
+            $("#loading").fadeIn('100');
+            $("#loading2").fadeIn('100');
+            echart1.setOption({}, true);
+            echart2.setOption({}, true);
+            parent.getData("post", "/echart/getEchartData", { gpId, start:echartStartTime, end: echartEndTime}).then((res) => {
+                let len = res.list.length;
+                chartOption.xAxis.data = res.xdata;
+                option1 = JSON.parse(JSON.stringify(chartOption));
+                option2 = JSON.parse(JSON.stringify(chartOption));
+                let text = gpId == 49 ? '3' : '13'
+                let typeName = gpId == 49 ? '振幅' : '角度'
+                option1.title.text = '第' + text + '榀水平倾斜'
+                option2.title.text = '第' + text + '榀垂直倾斜'
+                option1.yAxis.name = `X${typeName}||Y${typeName}(${res.senType.spUnit.match(/(.*?)\//)[1]})`;
+                option1.series = [];
+                userData1 = [];
+                option2.yAxis.name = `Z${typeName}(${res.senType.spUnit.match(/(.*?)\//)[1]})`;
+                option2.series = [];
+                userData2 = [];
+                option1.legend.data = [];
+                option2.legend.data = [];
+                for(let i=0; i<len; i++){
+                    let seriesRoot = {name: " ", type: "line", data:[]};
+                    let seriesRoot1 = {name: " ", type: "line", data:[]};
+                    let seriesRoot2 = {name: " ", type: "line", data:[]};
+
+                    option1.series.push({...seriesRoot1});
+                    option1.series.push({...seriesRoot});
+                    seriesRoot1.data = [];
+                    seriesRoot.data = [];
+                    userData1.push({...seriesRoot1});
+                    userData1.push({...seriesRoot});
+
+                    option1.legend.data.push(res.list[i].sensorName +`(X${typeName})`);
+                    option1.legend.data.push(res.list[i].sensorName +`(Y${typeName})`);
+
+                    option1.series[option1.series.length - 2].name = res.list[i].sensorName +`(X${typeName})`;
+                    option1.series[option1.series.length - 1].name = res.list[i].sensorName +`(Y${typeName})`;
+                    userData1[option1.series.length - 2].name = res.list[i].sensorName +`(X${typeName})`;
+                    userData1[option1.series.length - 1].name = res.list[i].sensorName +`(Y${typeName})`;
+
+                    option2.series[i] = {...seriesRoot2};
+                    seriesRoot2.data = [];
+                    userData2[i] = {...seriesRoot2};
+                    if(!['QX-13-1', 'QX-13-3'].includes(res.list[i].sensorName)) {
+                        option2.legend.data[i] = res.list[i].sensorName +`(Z${typeName})`;
+                        option2.series[i].name = res.list[i].sensorName +`(Z${typeName})`; 
+                    }
+                    userData2[i].name = res.list[i].sensorName;
+                    for(let j=0; j<res.list[i].datas.length; j++){
+                        option1.series[option1.series.length - 2].data[j] = res.list[i].datas[j].deflection || '-';
+                        option1.series[option1.series.length - 1].data[j] = res.list[i].datas[j].deflection1 || '-';
+                        
+                        if(!['QX-13-1', 'QX-13-3'].includes(res.list[i].sensorName)) {
+                            option2.series[i].data[j] = res.list[i].datas[j].deflection2 || '-'; 
+                        }
+                        userData1[option1.series.length - 2].data[j] = res.list[i].datas[j].daRelative1 || '-';
+                        userData1[option1.series.length - 1].data[j] = res.list[i].datas[j].daRelative2 || '-';
+                        userData2[i].data[j] = res.list[i].datas[j].daRelative3 || '-';
+                    }
+                }
+                echart1.setOption(option1, true);
+                echart2.setOption(option2, true);
+                $("#loading").fadeOut('100');
+                $("#loading2").fadeOut('100');
+            })
+        }
+        // 原始曲线与优化曲线切换
+        function onChangeLineType() {
+            let type = $(event.target).val()*1;
+            let currentLine1 = userData1;
+            userData1 = option1.series;
+            option1.series = currentLine1;
+            let currentLine2 = userData2;
+            userData2 = option2.series;
+            option2.series = currentLine2;
+            echart1.setOption(option1, true);
+            echart2.setOption(option2, true); 
+        }
+        //时间格式化函数
+        function timeFormat(fmt) {
+            var o = {
+                "M+": this.getMonth() + 1, //月份 
+                "d+": this.getDate(), //日 
+                "H+": this.getHours(), //小时 
+                "m+": this.getMinutes(), //分 
+                "s+": this.getSeconds(), //秒 
+                "q+": Math.floor((this.getMonth() + 3) / 3),
+                "S": this.getMilliseconds() //毫秒 
+            };
+            if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+            for (var k in o)
+            if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+            return fmt;
+        }
+        //切换桁架按钮
+        function getFrameList() {
+            // parent.getData("get", "/echart/selectCsuProjectGp/4/"+spCode, {}).then((res) => {
+            //     frameList = res.data;
+            //     console.log(res.data)
+            //     res.data.forEach( item => {
+            //         if(item.gp_name.indexOf('振动${typeName}') > -1) {
+            //             frameList.push(item)
+            //         }else{
+            //             pillarList.push(item)
+            //         }
+            //     })
+            //     gpId = pillarList[0].gp_id;
+            // });  
+            pillarList = [
+                {gp_id: 49,gp_name: "钢结构桁架倾斜监测(3P)",gp_text: "3P"},
+                {gp_id: 50,gp_name: "钢结构桁架倾斜监测(6P)",gp_text: "6P"}
+            ]
+            frameList = [{gp_id: 51,gp_name: "钢结构桁架倾斜监测(13P)",gp_text: "13P"} ]
+            frameControl(pillarList, 0);
+            frameControl(frameList, 1); 
+            webSocketData();
+        }
+        //桁架按钮生成和控制
+        function frameControl(list, index) {
+            let parent = $('.farme-wrapper')[index];
+            let html = '';
+            list.forEach((element, i) => {
+                let frameIndex = element.gp_text.substr(0, element.gp_text.length-1);
+                if(i == currentFrame) {
+                    html += `<li class="d-flex flex-column align-items-center mr-1">
+                                <button class="btn btn-sm btn-info" data-index=${frameIndex}>第${frameIndex}榀${index==0?'短柱':'桁架'}</button>
+                            </li>`;
+                }else {
+                    html += `<li class="d-flex flex-column align-items-center">
+                                <button class="btn btn-sm btn-outline-info" data-index=${frameIndex}>第${frameIndex}榀${index==0?'短柱':'桁架'}</button>
+                            </li>`;
+                }
+            });
+            if(list.length > 0) {
+                $('#frameIndex').text(list[0].gp_text.substr(0, list[0].gp_text.length-1))
+            }
+            $(parent).html(html);
+            parent.addEventListener('click',changeFrame, false); 
+        }
+        function changeFrame(e){
+            e.stopPropagation();
+            //点击当前桁架不重加载
+            if(e.target.dataset.index == currentFrame||!e.target.dataset.index) {
+                return false;
+            }
+            let liNode = currentPage == 0? $('#frameBtn1 .btn-info')[0]:$('#swiper2 .btn-info')[0];
+            liNode.classList.remove('btn-info');
+            liNode.classList.add('btn-outline-info');
+            e.target.classList.remove('btn-outline-info');
+            e.target.classList.add('btn-info');
+            currentFrame = e.target.dataset.index*1
+            $('#frameIndex').text(currentFrame)
+            pillarList.forEach((item) => {
+                if(item.gp_text.substr(0, item.gp_text.length-1)*1 == currentFrame) {
+                    gpId = item.gp_id
+                }
+            })
+            sendEchartRequest()
+            if(webSocket){
+                webSocket.close(1000);
+            }else{
+                webSocketData();
+            }
+        }
+        //swiper
+        function initSwiper() {
+            new Swiper('.swiper-container', {
+                slidesPerView: 3,
+                spaceBetween: 15,
+                freeMode: true,
+                direction: 'vertical',
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+                observer: true,//修改swiper自己或子元素时，自动初始化swiper
+                observeParents: true,//修改swiper的父元素时，自动初始化swiper
+            });
+        }
+        //导入obj模型文件
+        function loadModle(fileName, scene) {
+            return new Promise((reslove, reject) => {
+                mtlLoader.load('resource/'+ fileName+ '.mtl', function(material) {
+                    material.preload();
+                    objLoader.setMaterials(material);
+                    objLoader.load('resource/'+ fileName + '.obj', function(object) {
+                        object.name = fileName;
+                        scene.add(object);
+                        reslove(object);
+                    });   
+                })
+            })
+        }
+        //每帧额外的运算 传感器信息牌位置变化
+        function renderSensorInfo() {
+            //获取到窗口的一半高度和一半宽度
+            let halfWidth = threeView1.width() / 2;
+            let halfHeight = threeView1.height() / 2;  
+            let point = {};
+            infoPillarArr.forEach( (item, i) => {
+                let pos = new THREE.Vector3( item.x, item.y, item.z);
+                let vector = pos.project(camera1);
+                $("#topPillar .lean-info li").eq(i).css({
+                    left:vector.x * halfWidth + halfWidth-30,
+                    top:-vector.y* halfHeight + halfHeight-20
+                })  
+            })
+            let halfWidth2 = threeView2.width() / 2;
+            let halfHeight2 = threeView2.height() / 2;  
+            sensorList.forEach( (item, i) => {
+                if(!!item.node){
+                    let pos = new THREE.Vector3( item.node.position.x, item.node.position.y, item.node.position.z);
+                    let vector = pos.project(camera2);
+                    $("#topPillarModel .sensorInfo .info").eq(i).css({
+                        left:vector.x * halfWidth2 + halfWidth2 - 75,
+                        top:-vector.y* halfHeight2 + halfHeight2 - 95
+                    })
+                    if ( (Math.abs(vector.x) > 1) || (Math.abs(vector.y) > 1) || (Math.abs(vector.z) > 1) ) {
+                        // 在视野外了
+                        $("#topPillarModel .sensorInfo .info").eq(i).fadeOut(); 
+                    } else {
+                        // 在视野内
+                        $("#topPillarModel .sensorInfo .info").eq(i).fadeIn();
+                    }
+                } 
+            })
+            let halfWidth3 = threeView3.width() / 2;
+            let halfHeight3 = threeView3.height() / 2;  
+            infoFrameArr.forEach( (item, i) => {
+                let pos = new THREE.Vector3( item.x, item.y, item.z);
+                let vector = pos.project(camera3);
+                $("#topFrame .lean-info li").eq(i).css({
+                    left:vector.x * halfWidth3 + halfWidth3-30,
+                    top:-vector.y* halfHeight3 + halfHeight3-20
+                })  
+            })
+            let halfWidth4 = threeView4.width() / 2;
+            let halfHeight4 = threeView4.height() / 2;  
+            let count = 0
+            sensorList1.forEach( (item, i) => {
+                if(!!item.node && item.sensorData !== undefined){
+                    let pos = new THREE.Vector3( item.node.position.x, item.node.position.y, item.node.position.z);
+                    let vector = pos.project(camera4);
+                    $("#topFrameModel .sensorInfo .info").eq(count).css({
+                        left:vector.x * halfWidth4 + halfWidth4 - 75,
+                        top:-vector.y* halfHeight4 + halfHeight4 - 95
+                    }) 
+                    if ( (Math.abs(vector.x) > 1) || (Math.abs(vector.y) > 1) || (Math.abs(vector.z) > 1) ) {
+                        // 在视野外了
+                        $("#topFrameModel .sensorInfo .info").eq(i).fadeOut(); 
+                    } else {
+                        // 在视野内
+                        $("#topFrameModel .sensorInfo .info").eq(i).fadeIn();
+                    }
+                    count++
+                } 
+            })
+            
+        } 
+        //生成传感器模型
+        function buildLight(frame) {
+            sensorList.forEach((item, j) => {
+                let pos = frame.position.clone();
+                if(j < 2) {
+                    pos.x = pos.x - 428;
+                    pos.y = pos.y + 25;
+                    pos.z = pos.z - 33 + j* 64;
+                    positionSensor(item, frame,pos.x, pos.y, pos.z);
+                }else{
+                    pos.x = pos.x + 416;
+                    pos.y = pos.y + 25;
+                    pos.z = pos.z - 33 + (j-2)*64;
+                    positionSensor(item, frame, pos.x, pos.y, pos.z);
+                }
+            })
+        } 
+         //生成传感器模型
+         function buildLight13(frame) {
+            sensorList1.forEach((item, j) => {
+                let pos = frame.position.clone();
+                pos.x = pos.x - 238 + j*160;
+                pos.y = pos.y;
+                pos.z = pos.z + 2.5;
+                positionSensor(item, frame,pos.x, pos.y, pos.z);
+            })
+        } 
+        function positionSensor(sensor,group, x, y, z) {  
+            let sphere = new THREE.SphereGeometry(5,32,32);
+            let MeshPhongMaterial = new THREE.MeshBasicMaterial({color: '#7fff00', transparent: true, opacity: 0});
+            mesh = new THREE.Mesh(sphere, MeshPhongMaterial);
+            sensor.node = mesh.clone(true);
+            sensor.node.position.x = x;
+            sensor.node.position.y = y;
+            sensor.node.position.z = z;
+            sensor.node.name = 'sensor'+sensor.senName;
+            group.add(sensor.node);
+        }
+        //webSocketData实时数据推送
+        function webSocketData() { 
+            if (!webSocket) {
+                // webSocket = new WebSocket('ws://118.25.55.220:9001/websocket/'+ gpId);
+                webSocket = new WebSocket(parent.wsUrl+ gpId);
+                // 建立 websocket 连接成功触发事件
+                webSocket.onopen = function () {
+                    lastWSData = [];
+                    // console.log("websoket服务器连接成功...");
+                };
+                // 接收服务端数据时触发事件
+                webSocket.onmessage = function (evt) {  
+                    let res =JSON.parse(evt.data);
+                    let sensorInfoHtml = '', sensorArr = [], senName=[];
+                    //判断数据第二次推送
+                    if(lastWSData.length&&lastWSData[0].data.length !== res[0].data.length){
+                        lastWSData[0].data.forEach( (child, j) => {
+                            res[0].data.forEach( (element, i) => {
+                                if(child.senName === element.senName) {
+                                    lastWSData[0].data[j] = element;
+                                }
+                            })
+                        }) 
+                    }else{
+                        lastWSData = res; 
+                    }
+                    lightStatus(lastWSData, sensorList);
+                    lightStatus(lastWSData, sensorList1);
+                    function lightStatus(res, list) {
+                        let count = 0;
+                        res.forEach(function(item, i){
+                            item.data.forEach(function (value, j){
+                                list.forEach( (ele, index) => {
+                                    if(ele.senName.indexOf(value.senName) > -1){
+                                        saveInfo(ele, value, index);
+                                        $('#topFrame .lean-info li').eq(count).children().eq(0).text('X:' + value.deflection + '°')
+                                        $('#topFrame .lean-info li').eq(count).children().eq(1).text('Y:' + value.deflection1 + '°')
+                                        if(!!value.deflection2){
+                                            $('#topFrame .lean-info li').eq(count).children().eq(2).text('Z:' + value.deflection2 + '°')
+                                        }else{
+                                            $('#topFrame .lean-info li').eq(count).children().eq(2).text('')
+                                        }
+                                        count++
+                                    }
+                                })
+                            })
+                        })
+                        $('#topPillarModel .sensorInfo').html(sensorInfoHtml);
+                        $('#topFrameModel .sensorInfo').html(sensorInfoHtml);
+                        function saveInfo(sensor, sensorData, index) {
+                            switch(sensorData.status){
+                                case 1:
+                                    sensor.status = '在线';
+                                    sensor.color = '#7fff00';
+                                    break;
+                                case 2: 
+                                    sensor.status = '故障';
+                                    sensor.color = '#666';
+                                    break;
+                                case 3: 
+                                    sensor.status = '预警';
+                                    sensor.color = 'orange';
+                                    break;
+                                case 4: 
+                                    sensor.status = '告警';
+                                    sensor.color = 'red';
+                                    break;
+                                case 5: 
+                                    sensor.status = '离线';
+                                    sensor.color = '#fff';
+                                    break;
+                            }
+                            sensor.sensorData = {
+                                name: sensorData.senName,
+                                status: sensor.status,
+                                data: sensorData.deflection
+                            };
+                            sensor.name = sensorData.senName;
+                            if(!!sensorData.deflection) {
+                                sensor.data = sensorData.deflection;
+                            }
+                            if(!!sensor.node) {
+                                sensor.node.sensorData = sensor.sensorData;
+                            }
+                            $('#topPillarModel .sensorInfo').children()[index];
+                            sensorArr = sensorArr.concat([
+                                {val:sensorData.deflection, name: "A1"},
+                                {val:sensorData.deflection1, name: "A2"}
+                            ]);
+                            senName.push(sensorData.senName) 
+                            sensorInfoHtml += `<div class="info">
+                                                    <ul>
+                                                        <li>名称：<span id="sensorName">${sensor.sensorData.name}°</span></li>
+                                                    </ul>
+                                                    <div class="light">
+                                                        <div style="background: radial-gradient(#fff, ${sensor.color});"></div>
+                                                        <p style="background: radial-gradient(#fff 1%, ${sensor.color} 50%);"></p>
+                                                    </div>
+                                                </div>`
+                        }
+                        sensorArr.forEach( (item, i) => {
+                            $('#topPillar .lean-info li').eq(i).text(item.val + '°');
+                        })
+                        senName.forEach(( item , i) => {
+                            $('#topPillar .lean-info li').eq(i+10).text(item); 
+                        })
+                        $('#topPillar .lean-info li.show').removeClass('show');
+                        $('#topPillar .lean-info li').eq(8).html('<i>角度</i>');
+                    }
+                };
+                //关闭服务器时触发
+                webSocket.onclose = function(evt){
+                    // console.log('webSocket关闭成功');
+                    webSocket = null;
+                    if(evt.code == 1000) {
+                        webSocketData();
+                    }
+                }
+            }
+        }
+        function init() {
+            initScene();
+            initTime();
+            // initStats();
+            animate();
+            getEchartData()
+            loadModle('zn_topFrame', scene1);
+            loadModle('zn_frame', scene2).then( (obj) => {
+                obj.position.y = -50;
+                buildLight(obj);
+                frame = obj;
+            });
+            loadModle('zn_leftFrame', scene3);
+            loadModle('frame13', scene4).then( obj => {
+                buildLight13(obj);
+            });
+            getFrameList();
+            initSwiper();
+            //短柱和桁架切换
+            $('#carouselExampleControls').on('slid.bs.carousel', function (e) {
+                onWindowResize();
+                currentPage = e.to;
+                if(currentPage === 0) {
+                    gpId = 49
+                    scene2.add(frame);
+                    $('#echartsWrap1').html($('#echartsWrap2').children())
+                    getEchartData()
+                    if(pillarList.length > 0) {
+                        $('#frameIndex').text(pillarList[0].gp_text.substr(0, pillarList[0].gp_text.length-1));
+                        gpId = pillarList[0].gp_id;
+                        let liNode = currentPage == 0? $('#frameBtn1 .btn-info')[0]:$('#frameBtn2 .btn-info')[0];
+                        liNode.classList.remove('btn-info');
+                        liNode.classList.add('btn-outline-info');
+                        $('#frameBtn1 button')[0].classList.remove('btn-outline-info');
+                        $('#frameBtn1 button')[0].classList.add('btn-info');
+                        currentFrame = pillarList[0].gp_text.substr(0, pillarList[0].gp_text.length-1)
+                    }
+                    webSocket.close(1000);
+                }else{
+                    sensorList.forEach( (item, i) => {
+                        sensorList[i].sensorData = undefined
+                    })
+                    gpId = 51
+                    $('#echartsWrap2').html($('#echartsWrap1').children())
+                    getEchartData()
+                    if(frameList.length > 0) {
+                        $('#frameIndex').text(frameList[0].gp_text.substr(0, frameList[0].gp_text.length-1));
+                        gpId = frameList[0].gp_id;
+                        let liNode = currentPage == 0? $('#frameBtn1 .btn-info')[0]:$('#frameBtn2 .btn-info')[0];
+                        liNode.classList.remove('btn-info');
+                        liNode.classList.add('btn-outline-info');
+                        $('#frameBtn2 li button')[0].classList.remove('btn-outline-info');
+                        $('#frameBtn2 li button')[0].classList.add('btn-info');
+                        currentFrame = frameList[0].gp_text.substr(0, frameList[0].gp_text.length-1)
+                    }
+                    webSocket.close(1000);
+                }
+            })
+        }
+    </script>
+</body>
+</html>

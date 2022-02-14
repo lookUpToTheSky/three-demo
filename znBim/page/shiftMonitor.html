@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>挠度</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/swiper.min.css">
+
+    <script type="text/javascript">let THREE = parent.THREE;</script>
+    <script type="text/javascript" src="../lib/OrbitControls.js"></script>
+    <script type="text/javascript" src="../lib/OBJLoader.js"></script>
+    <script type="text/javascript" src="../lib/stats.js"></script>
+    <script type="text/javascript" src="../lib/onEvent.js"></script>
+
+    <script type="text/javascript" src="../lib/CopyShader.js"></script>
+    <script type="text/javascript" src="../lib/EffectComposer.js"></script>
+    <script type="text/javascript" src="../lib/RenderPass.js"></script>
+    <script type="text/javascript" src="../lib/ShaderPass.js"></script>
+    <script type="text/javascript" src="../lib/OutlinePass.js"></script>
+    <script type="text/javascript" src="../lib/SMAAShader.js"></script>
+    <script type="text/javascript" src="../lib/SMAAPass.js"></script>
+    <script type="text/javascript" src="../lib/LuminosityHighPassShader.js"></script>
+    <script type="text/javascript" src="../lib/UnrealBloomPass.js"></script>
+
+    <script type="text/javascript" src="../lib/jquery.min.js"></script>
+    <script type="text/javascript" src="../lib/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../lib/swiper.min.js"></script>
+    <script type="text/javascript" src="../js/canvasView.js"></script>
+    <script type="text/javascript" src="../lib/laydate.js"></script>
+    <style>
+        .pageRight .content1 {
+            background: url('../image/bg-img2.png') no-repeat;
+            background-size: 100% 100%;
+        }
+        .pageRight .content2 {
+            background: url('../image/bg-img1.png') no-repeat;
+            background-size: 100% 100%;
+        }
+        .monitorInfo {
+            background: url('../image/monitorInfo.png') no-repeat;
+            background-size: 100% 100%;
+        }
+        .footer {
+            background: url('../image/bg-img.png') no-repeat;
+            background-size: 100% 100%;  
+        }  
+        .swiper-container {
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        .swiper-slide {
+            font-size: 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 70%;
+        }
+        .swiper-pagination {
+            bottom: -5px !important;
+        }
+        .swiper-pagination-bullet {
+            background: #00F6FF;
+        }
+    </style>
+</head>
+<body onload="init()">
+    <div  class="container-fluid pl-0 bg-black w-100 vh-100">
+        <section id="threeModelView" class="fixed-top overflow-hidden col-6 col-sm-6 col-md-7 col-lg-7 vh-100 p-0">
+            <div class="sensorInfo"></div>
+            <div class="framelist" style="height: 140px">
+                <ul class="row m-0">
+                </ul>
+            </div>
+        </section>
+        <section class="position-fixed col-6 col-sm-6 col-md-5 col-lg-5 p-0" style="right: 0">
+            <div class="pageRight pl-2 pr-2" style="min-width: 280px">
+                <ul class="d-flex flex-column justify-content-start text-light vh-100">
+                    <li class="mt-2 pb-2 h-75">
+                        <div class="content1 d-flex flex-column p-2 h-100">
+                            <h6 class="text-hightBule pl-4">实时位移数据</h6>
+                            <div class="pl-4 d-flex align-items-center flex-wrap border-bottom border-info">
+                                    <label class="text-hightBule">时间：</label>
+                                    <select id="timeDuration" class="btn btn-outline-info bg-black"  onchange="onSelectedTime()">
+                                        <option value="0">最近一小时</option>
+                                        <option value="1" selected>最近一天</option>
+                                        <option value="2">最近一周</option>
+                                        <option value="3">最近一月</option>
+                                        <option value="4">其它</option>
+                                    </select>
+                                    <div id="rangeTime" class="pl-3 mt-2" style="display: none">
+                                        <input 
+                                            type="text" 
+                                            style="width: 130px; font-size: 12px" 
+                                            id="startTime" 
+                                            class="btn btn-outline-info btn-sm bg-black" 
+                                            autocomplete="off"
+                                            placeholder="开始时间"/>
+                                        <span>至</span>
+                                        <input 
+                                            type="text" 
+                                            style="width: 130px; font-size: 12px" 
+                                            id="endTime" 
+                                            autocomplete="off"
+                                            class="btn btn-outline-info btn-sm bg-black" 
+                                            placeholder="结束时间" /> 
+                                        <button id="search" class="btn btn-info btn-sm ml-2" disabled onclick="sendEchartRequest()">查询</button>
+                                    </div>
+                                    <select id="lineType" class="btn btn-outline-info bg-black ml-3 m-2" onchange="onChangeLineType()">
+                                        <option value="0" selected>原始曲线</option>
+                                        <option value="1">优化曲线</option>
+                                    </select>
+                                </div>
+                                <div class="pt-2 position-relative" style="flex: 1">
+                                    <div id="dataEchart" class="w-100 h-100"></div>
+                                    <div id="loading" class="position-absolute text-center">
+                                        <span class="spinner-border text-primary" role="status">
+                                        </span>
+                                        <div class="text-primary">Loading...</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li> 
+                </ul>
+            </div>
+        </section>
+        <footer class="fixed-bottom col-12 bg-black p-2 h-25">
+            <div class="footer h-100 p-3 d-flex flex-column">
+                <h6 class="text-hightBule">传感器信息</h6>
+                <div class="d-flex align-items-center" style="flex: 1">
+                    <div class="swiper-container">
+                        <ul class="swiper-wrapper d-flex align-items-center">
+                        </ul>
+                        <div class="swiper-pagination"></div>
+                    </div>
+                </div>
+                <!--swiper -->
+            </div>
+            <div id="loading1" class="position-absolute text-center">
+                <span class="spinner-border text-primary" role="status">
+                </span>
+                <div class="text-primary">Loading...</div>
+            </div>
+        </footer>
+    </div>
+    <script>
+        let camera, scene, renderer, controls, stats, composer, outLineColor;
+        let swiper = null,echartDom, echart, echartStartTime, echartEndTime;
+        let gpId = 42;
+        let spCode = 7;
+        let currentFrame = null;
+        let currentSensor = null;
+        let frameList = null;
+        let sensorList = [];
+        var webSocket = null;
+        let getEchartsTimer = null;//定时获取ecahrts数据
+        let series1 = [], series2 = [];//series1原始数据， series2优化数据
+        let threeView = $('#threeModelView');
+        //时间格式化函数添加到Date原型链上
+	    Date.prototype.Format = timeFormat;
+        let chartOption = {
+                color: ['#52FFFF','#FFAE00','#e36159','#00ff7f','#bc1717',
+                '#0088cc','#ff7f00','#db7093','#b87333',
+                '#ff2400','#215e21','#ff00ff','#99cc32',
+                '#23238e','#5340cc'],
+                tooltip: {
+                    trigger: "axis"
+                },
+                legend: {
+                    data: [],
+                    x: 'center',
+                    y: 0,
+                    textStyle: {
+                        color: "#fff" //刻度颜色
+                    }
+                },
+                toolbox: {
+                    iconStyle: {
+                        borderColor: '#e36159',
+                    },
+                    y: 0
+                },
+                dataZoom: [{
+                    type: 'inside' ,
+                    start: 0,
+                    end: 100,
+                }],
+                grid: {
+                    top: 85,
+                    left: 55,
+                    right: 50,
+                    bottom: 65
+                },
+                xAxis: {
+                //x轴
+                type: "category",
+                name: '时间',
+                data: [],
+                boundaryGap: false,
+                axisLabel: {
+                    rotate: 30,
+                    textStyle: {
+                    color: "#fff" //刻度颜色
+                    }
+                },
+                axisTick: {
+                    show: false
+                },
+                axisLine: {
+                    lineStyle: {
+                        color: 'rgba(82,255,255,.5)'
+                    }
+                },
+                splitLine: {
+                    show: true,
+                    lineStyle: {
+                        color: 'rgba(82,255,255,.16)'
+                    }
+                }
+                },
+                yAxis: {
+                    //y轴
+                    type: "value",
+                    name: "",
+                    // min: 'dataMin',
+                    // scale: true,
+                    axisTick: {
+                        show: false
+                    },
+                    axisLabel: {
+                        textStyle: {
+                        color: "#fff", //刻度颜色
+                        fontSize: 14 //刻度大小
+                        }
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            color: 'rgba(82,255,255,.5)'
+                        }
+                    },
+                    splitLine: {
+                        show: true,
+                        lineStyle: {
+                            color: 'rgba(82,255,255,.16)'
+                        }
+                    }
+                },
+                series: []
+            }//ecahrt图表对象
+        //3D场景初始化
+        function initScene() {
+            camera = new THREE.PerspectiveCamera( 75, threeView.width() / threeView.height(), 1, 20000 );
+            // camera.position.set( -230, 150, 0 ); 
+            camera.position.set( -50, 150, -350 ); 
+            // camera.lookAt(0,0,0);
+            scene = new THREE.Scene();
+            THREE.onEvent(scene, camera,threeView.width(), threeView.height());//事件初始化
+            //场景中添加网格辅助
+            let grid = new THREE.GridHelper( 1200, 20, 0x38b0de, 0x38b0de);
+            // scene.add( grid );
+            // 给场景添加一个环境光
+            let ambientLight = new THREE.AmbientLight( 0x888888);
+            scene.add( ambientLight );
+            // 给场景添加一个平行光出来
+            let dirLight = new THREE.DirectionalLight( 0xffffff);
+            //  dirLight.color.setHSL( 0.1, 1, 0.95 );
+            dirLight.position.set( -1, 1.75, 1 );
+            // dirLight.position.multiplyScalar( 30 );
+            scene.add( dirLight );
+            //实例化一个渲染器s
+            renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
+            // renderer.setPixelRatio( window.devicePixelRatio );
+            renderer.setSize( threeView.width(), threeView.height());
+            // renderer.setClearColor( 0xffffff, 0.1);   
+            threeView.append( renderer.domElement );
+            //控制相机
+            controls = new THREE.OrbitControls( camera, renderer.domElement);
+            controls.minPolarAngle =0;
+            controls.maxPolarAngle =Math.PI/2.1;
+            //设置相机移动距离
+            controls.minDistance = 100;
+            controls.maxDistance = 500;
+            // 使动画循环使用时阻尼或自转 意思是否有惯性
+            controls.enableDamping = true;
+            //动态阻尼系数 就是鼠标拖拽旋转灵敏度
+            controls.dampingFactor = 0.9;
+            window.addEventListener( 'resize', onWindowResize, false );
+            composerPass(renderer);
+        }
+        //后期通道
+        function composerPass(renderer) {
+            composer = new THREE.EffectComposer(renderer);//通道组合器
+            var renderPass = new THREE.RenderPass( scene, camera );//渲染一个新环境
+            // 外边框outLine
+            outLineColor = new THREE.OutlinePass( 
+                new THREE.Vector2( threeView.width(), threeView.height() ), scene, camera);
+            outLineColor.visibleEdgeColor.set( 'orangered' );
+            outLineColor.edgeStrength = 8;
+            //场景发光
+            var bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2( threeView.width(), threeView.height() ))
+            bloomPass.exposure =1;
+            bloomPass.threshold = 0;
+            bloomPass.strength = .3;
+            bloomPass.radius = 1;
+            bloomPass.enabled  = false;
+            //抗锯齿SMAAShader
+            var SMAAShader= new THREE.SMAAPass( threeView.width(),  threeView.height() );
+            SMAAShader.renderToScreen = true;
+
+            composer.addPass( renderPass );
+            composer.addPass( bloomPass );
+            composer.addPass(outLineColor);
+            composer.addPass( SMAAShader );
+
+        }
+        //屏幕宽度监听
+        function onWindowResize() {
+            camera.aspect = threeView.width() /threeView.height();
+            camera.updateProjectionMatrix();
+            renderer.setSize( threeView.width(),threeView.height() );
+            composer.setSize( threeView.width(),threeView.height() );
+            THREE.onEvent(scene, camera,threeView.width(), threeView.height());
+        }
+        //初始化性能插件
+        function initStats() {
+            stats = new Stats();
+            document.body.appendChild(stats.dom);
+        }
+        function distance() {
+            let point = new THREE.Vector3(0,0,0);
+            let distance = point.distanceTo(camera.position);
+            $('.info ul').css({'opacity': distance < 280?1:0} );
+            $('.sensorInfo').css({'pointer-events': distance < 280?'auto': 'none'} );
+        }
+        //渲染
+        function animate() {
+            //更新性能插件
+            // stats.update(); 
+            controls.update();
+            // renderer.render(scene, camera);
+            parent.TWEEN.update();
+            composer.render();
+            composer.autoClear = false; 
+            distance();
+            renderSensorInfo();
+            requestAnimationFrame(animate);
+        }
+        //场景物体，事件
+        function renderSensor() {
+            currentFrame = parent.objArr[2];
+            parent.buildLight4(currentFrame ,scene); 
+        }
+         //swiper
+         function initSwiper() {
+            swiper = new Swiper('.swiper-container', {
+                slidesPerView: 8,
+                spaceBetween: 10,
+                freeMode: true,
+                speed:1500,
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+                observer: true,//修改swiper自己或子元素时，自动初始化swiper
+                observeParents: true,//修改swiper的父元素时，自动初始化swiper
+            });
+        }
+        //footer图表
+        function getEchartData() {
+            echartDom = document.getElementById('dataEchart');
+            echart = parent.echarts.init(echartDom);
+            echart.setOption(chartOption, true);
+            //窗口变化改变图表大小
+            window.addEventListener('resize', function (e) {
+                echart.resize();
+            }, false); 
+            echartEndTime = new Date().getTime();
+            echartStartTime = echartEndTime - 24*3600*1000;
+            echartStartTime = new Date(echartStartTime).Format('yyyy-MM-dd HH:mm:ss');
+            echartEndTime = new Date(echartEndTime).Format('yyyy-MM-dd HH:mm:ss');
+            //第一次加载
+            sendEchartRequest();
+        }
+        function initTime() {
+            laydate.render({
+                elem: '#startTime',
+                theme: '#17a2b8',
+                type: 'datetime',
+                format: 'yyyy-MM-dd HH:mm:ss',
+                max: new Date().getTime(),
+                done: function(value, date, endDate){
+                    echartStartTime = value;
+                    if(echartEndTime) $('#search').removeAttr("disabled");
+                }
+            });
+            laydate.render({
+                elem: '#endTime',
+                theme: '#17a2b8',
+                type: 'datetime',
+                format: 'yyyy-MM-dd HH:mm:ss',
+                max: new Date().getTime(),
+                done: function(value, date, endDate){
+                    echartEndTime = value;
+                    if(echartStartTime) $('#search').removeAttr("disabled");
+                }
+            });
+        }
+        function onSelectedTime() {
+           const selectVal = $(event.target).val()*1;
+           const nowTime = new Date().getTime();
+           $("#lineType").val(0);
+           switch(selectVal) {
+                case 0: echartStartTime = nowTime - 3600*1000;
+                    $('#rangeTime').fadeOut();
+                    break;
+                case 1: echartStartTime = nowTime - 24*3600*1000;
+                    $('#rangeTime').fadeOut();
+                    break;
+                case 2:echartStartTime = nowTime - 7*24*3600*1000;
+                    $('#rangeTime').fadeOut();
+                    break;
+                case 3:echartStartTime = nowTime - 30*24*3600*1000;
+                    $('#rangeTime').fadeOut();
+                    break;
+                case 4: $('#rangeTime').fadeIn();
+                    echartStartTime = echartEndTime = '';
+                    return false;
+                    break;
+           }
+            echartStartTime = new Date(echartStartTime).Format('yyyy-MM-dd HH:mm:ss');
+            echartEndTime = new Date(nowTime).Format('yyyy-MM-dd HH:mm:ss');
+            sendEchartRequest();
+        }
+        function sendEchartRequest() {
+            if(getEchartsTimer) {
+                clearInterval(getEchartsTimer);
+                getEchartsTimer = null;
+            }
+            $("#loading").fadeIn('100');
+            echart.setOption({}, true);
+            parent.getData("post", "/echart/getEchartData", {"gpId": gpId, start: echartStartTime, end: echartEndTime}).then((res) => {
+                let len = res.list.length;
+                chartOption.xAxis.data = res.xdata;
+                chartOption.yAxis.name = `${res.senType.spColumns}(${res.senType.spUnit})`;
+                chartOption.series = [];
+                chartOption.legend.data = [];
+                for(let i=0; i<len; i++){
+                    let seriesRoot = {name: " ", type: "line", data: []};
+                    series1[i] = {...seriesRoot};
+                    series2[i] = {...seriesRoot};
+                    series1[i].data = [];
+                    series2[i].data = [];
+                    chartOption.legend.data[i] = res.list[i].sensorName;
+                    series1[i].name = res.list[i].sensorName;
+                    series2[i].name = res.list[i].sensorName;
+                    for(let j=0; j<res.list[i].datas.length; j++){
+                        series1[i].data[j] = res.list[i].datas[j].deflection;
+                        series2[i].data[j] = res.list[i].datas[j].daRelative1;
+                    }
+                    chartOption.series = series1;
+                }
+                echart.setOption(chartOption, true);
+                $("#loading").fadeOut('100');
+                //第n次加载
+                getEchartsTimer = setInterval(function () {
+                    sendEchartRequest();
+                }, 60000*10)
+            })
+        }
+        // 原始曲线与优化曲线切换
+        function onChangeLineType() {
+            let type = $(event.target).val()*1;
+            if(type == 0) {
+                chartOption.series = series1;
+            }else{
+                chartOption.series = series2;
+            }
+            echart.setOption(chartOption, true);
+        }
+        //时间格式化函数
+        function timeFormat(fmt) {
+            var o = {
+                "M+": this.getMonth() + 1, //月份 
+                "d+": this.getDate(), //日 
+                "H+": this.getHours(), //小时 
+                "m+": this.getMinutes(), //分 
+                "s+": this.getSeconds(), //秒 
+                "q+": Math.floor((this.getMonth() + 3) / 3),
+                "S": this.getMilliseconds() //毫秒 
+            };
+            if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+            for (var k in o)
+            if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+            return fmt;
+        }
+        //切换桁架按钮
+        function getFrameList() {
+            parent.getData("get", "/echart/selectCsuProjectGp/4/"+spCode, {}).then((res) => {
+                frameList = res.data;
+                frameControl(frameList);
+                changeFrameColor(frameList);
+                gpId = frameList[0].gp_id;
+                webSocketData();
+            });   
+        }
+        function changeFrameColor(list) {
+            // parent.objArr[12].traverse( child =>{
+            //     if(child.type == 'Mesh') {
+            //         child.material.transparent = true;
+            //         child.material.opacity == 0.3;
+            //         child.material.color.set('#fff');
+            //     }
+            // })
+            list.forEach( item => {
+                let frameIndex = parseInt(item.gp_text) - 1;
+                parent.objArr[frameIndex].traverse( child =>{
+                    if(child.type == 'Mesh') {
+                        child.material.transparent = false;
+                        child.material.opacity == 1;
+                        child.material.color.set('#ccc')
+                    }
+                })
+            })
+        }
+        //桁架按钮生成和控制
+        function frameControl(frameList) {
+            let parent = $('.framelist ul')[0];
+            let ulHtml = '';
+            frameList.forEach((element, i) => {
+                if(element.gp_id == gpId) {
+                    ulHtml += `<li class="selected col p-0 mr-0">${element.gp_text}</li>`;
+                }else {
+                    ulHtml += `<li class="col p-0 mr-0">${element.gp_text}</li>`;
+                }
+            });
+            $('.framelist>ul').html(ulHtml);
+            parent.addEventListener('click',changeFrame, false); 
+        }
+        function changeFrame(e){
+            e.stopPropagation();
+            //点击当前桁架不重加载
+            if(e.target.innerText == currentFrame.name||e.target.children.length > 0) {
+                return false;
+            }
+            $("#timeDuration").val(1);
+            $("#lineType").val(0);
+            let liNode = $('.framelist ul .selected')[0];
+            liNode.classList.remove('selected');
+            e.target.classList.add('selected');
+            frameList.forEach((item) => {
+                if(item.gp_text == e.target.innerText) {
+                    gpId = item.gp_id
+                }
+            })
+            parent.sensorList4.forEach((item, i) => {
+                if(gpId == 42&&spCode == 7) {
+                    parent.sensorList4[i].senCode = parent.senCodeArr3[i];
+                }else{
+                    parent.sensorList4[i].senCode = parent.senCodeArr6[i];
+                }
+            })
+            setTimeout(() => {
+                initData(e.target.innerText);
+                getEchartData();
+                if(webSocket){
+                    webSocket.close(1000);
+                }else{
+                    webSocketData();
+                }
+            }, 100)
+            
+        }
+        //切换桁架更新数据
+        function initData(frameName) {
+            //清除传感器
+            parent.sensorList4.forEach(item => {
+                scene.remove(item.node);
+            })
+            //重新生成传感器
+            if(frameName.length == 2) {
+                frameId = frameName.substr(0,1)*1-1;
+            } else {
+                frameId = frameName.substr(0,2)*1-1;
+            }
+            //重新生成传感器
+            currentFrame = parent.objArr[frameId];
+            parent.buildLight4(currentFrame, scene);
+            $('#threeModelView .sensorInfo .sensorValue').html('加载中...');
+        }
+        //每帧额外的运算 传感器信息牌位置变化
+        function renderSensorInfo() {
+            let halfWidth = threeView.width() / 2;
+            let halfHeight = threeView.height() / 2;  
+            let point = {};
+            let acount = 0;
+            sensorList.forEach( (item, i) => {
+                if(!!item.node){
+                    let pos = new THREE.Vector3( item.node.position.x, item.node.position.y, item.node.position.z);
+                    let vector = pos.project(camera);
+                    $("#threeModelView .sensorInfo .info").eq(acount).css({
+                        left:vector.x * halfWidth + halfWidth - 75,
+                        top:-vector.y* halfHeight + halfHeight - 40
+                    })  
+                }
+                acount++;
+            }) 
+        } 
+        //webSocketData实时数据推送
+        function webSocketData() { 
+            if (!webSocket) {
+                // 如果网站是 https 则对应 wss
+                // 如果网站是 http 则对应 ws 即可
+                // webSocket = new WebSocket('ws://118.25.55.220:9001/websocket/'+ gpId);
+                webSocket = new WebSocket(parent.wsUrl+ gpId);
+                // 建立 websocket 连接成功触发事件
+                webSocket.onopen = function () {
+                    // console.log("websoket服务器连接成功...");
+                    $('.swiper-wrapper').html('');
+                    $("#loading1").fadeIn('100');
+                };
+                // 接收服务端数据时触发事件
+                webSocket.onmessage = function (evt) {  
+                    let res =JSON.parse(evt.data);
+                    let sensorInfoHtml = '', sensorHtml = '';
+                    //drawLine(res);
+                    switch(res.length) {
+                        case 1:lightStatus(res, parent.sensorList4);break;
+                        case 2:lightStatus(res, parent.sensorList1);break;
+                        case 3:lightStatus(res, parent.sensorList2);break;
+                    }
+                    //传感器闪灯和当前数据
+                    function lightStatus(res, list) {
+                        sensorList = list;
+                        let count = 0;
+                        res[0].data.forEach(function(item, i){
+                            sensorList.forEach((element, j) => {
+                                if(item.senCode == element.senCode) {
+                                    saveInfo(sensorList[j], item);
+                                }
+                            })
+                        })	
+                        // sensorFlashLight(sensorList);	
+                        function saveInfo(sensor, sensorData) {
+                            switch(sensorData.status){
+                                case 1:
+                                    sensor.status = '在线';
+                                    sensor.color = '#7fff00';
+                                    break;
+                                case 2: 
+                                    sensor.status = '故障';
+                                    sensor.color = '#666';
+                                    break;
+                                case 3: 
+                                    sensor.status = '预警';
+                                    sensor.color = 'orange';
+                                    break;
+                                case 4: 
+                                    sensor.status = '告警';
+                                    sensor.color = 'red';
+                                    break;
+                                case 5: 
+                                    sensor.status = '离线';
+                                    sensor.color = '#fff';
+                                    break;
+                            }
+                            sensor.sensorData = {
+                                name: sensorData.senName,
+                                status: sensor.status,
+                                data: sensorData.deflection
+                            };
+                            sensor.name = sensorData.senName;
+                            if(!!sensorData.deflection) {
+                                sensor.data = sensorData.deflection;
+                            }
+                            if(!!sensor.node) {
+                                sensor.node.sensorData = sensor.sensorData;
+                            }
+                            sensorInfoHtml += 
+                                `<li class="swiper-slide monitorInfo p-2" style="color:${sensor.color}; min-width: 150px">
+                                    <h6>采集点编号：<span>${sensorData.senName}</span></h6>
+                                    <h6>状态：<span>${sensor.status}</span></h6>
+                                    <h6>
+                                        数据：
+                                        <span>
+                                            ${sensor.data == undefined? '无数据':sensor.data+'mm'}
+                                        </span>
+                                    </h6>
+                                </li>`
+                            sensorHtml += `<div class="info">
+                                            <ul>
+                                                <li><span class="sensorValue">${sensor.name}：${sensor.data == undefined? '无数据':sensor.data+'mm'}</span></li>
+                                            </ul>
+                                            <div class="light">
+                                                <div style="background: radial-gradient(#fff, ${sensor.color});"></div>
+                                                <p style="background: radial-gradient(#fff 1%, ${sensor.color} 50%);"></p>
+                                            </div>
+                                        </div>`
+                        }
+                        $('.swiper-wrapper').html(sensorInfoHtml);
+                        $('#threeModelView .sensorInfo').html(sensorHtml);
+                        if(!swiper) {
+                            initSwiper(); 
+                        }else{
+                            swiper.destroy();
+                            initSwiper(); 
+                        }
+                        $("#loading1").fadeOut('100');
+                    }
+                };
+                //关闭服务器时触发
+                webSocket.onclose = function(evt){
+                    // console.log('webSocket关闭成功');
+                    webSocket = null;
+                    if(evt.code == 1000) {
+                        webSocketData();
+                    }
+                }
+            }
+        }
+        //入口
+        function init() {
+            initTime();
+            getEchartData();
+            initScene();
+            // initStats();
+            animate();
+            parent.addModel(scene);
+            renderSensor();
+            getFrameList();
+        }
+    </script>
+</body>
+</html>

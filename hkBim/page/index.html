@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
+    <link rel="shortcut icon" href="../img/logo.svg" type="img/x-icon">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>海坤美寓内支撑拆除-在线监测平台</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/index.css">
+
+    <script type="text/javascript" src="../lib/three.min.js"></script>
+    <script type="text/javascript" src="../lib/OrbitControls.js"></script>
+    <script type="text/javascript" src="../lib/OBJLoader.js"></script>
+    <script type="text/javascript" src="../lib/MTLLoader.js"></script>
+    <script type="text/javascript" src="../lib/GLTFLoader.js"></script>
+    <script type="text/javascript" src="../lib/DRACOLoader.js"></script>
+    
+    <script type="text/javascript" src="../lib/CopyShader.js"></script>
+    <script type="text/javascript" src="../lib/EffectComposer.js"></script>
+    <script type="text/javascript" src="../lib/RenderPass.js"></script>
+    <script type="text/javascript" src="../lib/ShaderPass.js"></script>
+    <script type="text/javascript" src="../lib/OutlinePass.js"></script>
+    <script type="text/javascript" src="../lib/SMAAShader.js"></script>
+    <script type="text/javascript" src="../lib/SMAAPass.js"></script>
+    <script type="text/javascript" src="../lib/LuminosityHighPassShader.js"></script>
+    <script type="text/javascript" src="../lib/UnrealBloomPass.js"></script>
+
+    <script type="text/javascript" src="../lib/onEvent.js"></script>
+    <script type="text/javascript" src="../lib/tween.umd.js"></script>
+    <script type="text/javascript" src="../lib/jquery.js"></script>
+    <script type="text/javascript" src="../lib/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../lib/echarts.min.js"></script>
+    <style>
+        .jumbotron {
+            background: url('../img/bg-img.png') no-repeat;
+            background-size: 100% 100%;
+        }
+        .content1 {
+            background: url('../img/bg-img1.png') no-repeat;
+            background-size: 100% 100%;
+        }
+        .content2 {
+            background: url('../img/bg-img2.png') no-repeat;
+            background-size: 100% 100%;
+        }
+        .content3{
+            background: url('../img/bg-img1.png') no-repeat;
+            background-size: 100% 100%;
+            overflow: auto;
+        }
+    </style>
+</head>
+<body>
+    <script type="text/javascript" src="../js/canvasView.js"></script>
+    <script type="text/javascript" src="../js/config.js"></script>
+    <script type="text/javascript" src="../js/index.js?v=1.1"></script>
+    <!-- 点位定位 -->
+    <!-- <div class="pos" style="position: fixed; top:100px;line-height: 40px;padding: 0 10px;left:500px;z-index: 9999;font-size: 18px; color: '#fff';background: #ccc">
+        x:<span id="posX" style="color: red "></span>,
+        y:<span id="posY" style="color: red "></span>,
+        z:<span id="posZ" style="color: red "></span>
+    </div> -->
+    <div class="sensorInfo">
+        <img src="../img/closeInfo.svg" height="15" width="15" alt="" title="关闭信息">
+        <div id="info"></div>
+    </div>
+    <div class="container-fluid m-0 p-0 text-light">
+        <!-- 头部信息 -->
+        <nav id="headerNav" class="navbar  navbar-expand-lg row d-flex fixed-top navbar-dark bg-secondBlack  p-3 m-0">
+            <div class="pull-left ml-3 col-0 col-lg-3 d-flex">
+                <img src="../img/logo.png" width="80" height="40" class="d-inline-block mr-3 align-top" >
+                <a class="navbar-brand ml-1" href="#"><img src="../img/warn.svg" width="20" height="20" ></a>
+                <div class="time d-flex align-items-end text-bule ">
+                    <div class="d-flex flex-column align-items-center pr-3">
+                        <small id="week">星期···</small>
+                        <small id="day" class="border-top border-info">0000-00-00</small>
+                    </div>
+                    <h5 id="houer">00:00:00</h5>
+                </div>
+            </div>
+            <div class="hederTitle col-12 col-lg-6 offset-md-0">
+                <h4 class="text-center col-sm-12 mx-auto web-font text-bule ellipsis web-font">海坤美寓内支撑拆除在线监测平台</h4>
+            </div>
+            <div class="text-right d-flex justify-content-end align-items-center col-0 col-lg-3">
+                <img src="../img/userIcon.svg" width="30" height="30" class="d-inline-block align-top" >
+                <a href="http://yun.kexsci.com" class="text-info p-3 pt-4">登录科形云平台</a>
+            </div>
+            <button class="position-fixed menuBtn bg-info border p-1" style="min-width: 30px;display: none;right: 10px;"type="button">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </nav>
+        <section class="row" style="display: block">
+            <!-- 顶部按钮 -->
+            <label id="changeView" class="d-flex justify-content-center">
+                <input type="checkbox" name="" id="">
+                <span></span>
+            </label>
+            <!-- 左边信息 -->
+            <section class="navLeft pl-0 pr-0 vh-100 " style="padding-top: 72px">    
+                <div class="pageLeft bg-secondBlack h-100 pl-2 pr-2">
+                    <ul class="d-flex flex-column justify-content-start text-light h-100">
+                        <li class="h-25 pt-2 pb-2">
+                            <div class="content1 h-100 p-2 d-flex flex-column">
+                                <h6 class="text-hightBule">项目基本情况</h6>
+                                <ul class="d-flex flex-column justify-content-around" style="flex:1">
+                                    <li class="w-100 p-2 d-flex justify-content-start bg-liver">
+                                        <div class="w-50">群组：<span id="allGpNum" class="text-warning">···</span>个</div>
+                                        <div class="w-50">
+                                            采集点<small></small>：<span id="sensorNum" class="text-success">···</span>/
+                                            <span id="allSensorNum" class="text-warning">···</span>个
+                                        </div>
+                                    </li>
+                                    <li class="w-100 p-2 d-flex justify-content-start bg-liver">
+                                        <div class="w-50">数据量：<span id="allDataNum" class="text-warning">···</span>条</div>
+                                        <div class="w-50">预警数：<span id="allWarnNum" class="text-warning">···</span>条</div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="h-50 pb-2">
+                            <div class="content2 h-100 p-2 d-flex flex-column">
+                                <h6 class="echartTitle text-hightBule">···-时间曲线图</h6>
+                                <div id="dataEchart" class="w-100" style="flex:1"></div>
+                            </div>
+                        </li> 
+                        <li class="h-25 pb-2">
+                            <div class="content1 p-2 h-100 p-0 d-flex flex-column">
+                                <h6 class="text-hightBule">采集点状态说明</h6>
+                                <ul class="lightStatus bg-secondLiver d-flex justify-content-around align-items-center" style="flex: 1">
+                                    <li><span></span>在线</li>
+                                    <li><span></span>离线</li>
+                                    <li><span></span>禁用</li>
+                                </ul>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+            <!-- 右边信息 -->
+            <section class="navRight pr-0 pl-0 vh-100" style="right: 0;padding-top: 72px">
+                <div class="pageRight bg-secondBlack h-100 pl-2 pr-2">
+                    <ul class="d-flex flex-column justify-content-around text-light h-100">
+                        <li class="h-25 pt-2 pb-2">
+                            <div class="content1 h-100 p-2 text-bule flex-column d-flex">
+                                <h6 class="text-hightBule m-0">环境因素</h6>
+                                <div class="d-flex flex-column justify-content-around" style="flex: 1">
+                                    <div>
+                                        <ul class="topInfo border-bottom border-info d-flex justify-content-between p-2 mr-4 ml-4">
+                                            <li class="d-flex"><h3 clss="p-0" id="tmp">···</h3><span class="pt-2 pl-2">摄氏度℃</span></li>
+                                            <li class="d-flex align-items-center">
+                                                <img src="../img/colud.png" width="30" height="25" >
+                                                <span class="pt-2 pl-2" id="cond_txt">···</span>
+                                            </li>
+                                        </ul>
+                                        <ul class="bottomInfo d-flex justify-content-between p-3">
+                                            <li class="d-flex">
+                                                <img src="../img/water.png" class="m-1 pr-1" width="20" height="25" alt="" srcset="">
+                                                <div class="d-flex flex-column">
+                                                    <h6 class="mb-0">湿度</h6>
+                                                    <span id="hum">···</span>
+                                                </div>
+                                            </li>
+                                            <li class="d-flex">
+                                                <img src="../img/rain.png" class="m-1 pr-1" width="25" height="25" alt="" srcset="">
+                                                <div class="d-flex flex-column">
+                                                    <h6 class="mb-0">降雨量</h6>
+                                                    <span id="pcpn">···</span>
+                                                </div>
+                                            </li>
+                                            <li class="d-flex">
+                                                <img src="../img/wind.png" class="m-1 pr-1" width="25" height="25" alt="" srcset="">
+                                                <div class="d-flex flex-column">
+                                                    <h6 class="mb-0">风速</h6>
+                                                    <span id="wind_spd">···</span>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="h-50 pb-2">
+                            <div class="content2 h-100 p-2 d-flex justify-content-start flex-column">
+                                <h6 class="text-hightBule">预警信息</h6>
+                                <div id="warnMsg" class="pt-2 d-flex flex-column justify-content-center overflow-hidden">
+                                    <p class="text-danger text-center p-4"></p>
+                                    <table class="table table-sm table-borderless table-striped bg-warning">
+                                        <!-- js -->
+                                    </table>
+                                </div>
+                            </div>
+                        </li> 
+                        <li class="h-25 pb-2">
+                            <div class="content3 h-100 p-2 d-flex flex-column">
+                                <h6 class="text-hightBule">数据采集频率</h6>
+                                <div class="w-100 d-flex justify-content-around align-items-center" style="flex:1">
+                                    <ul class="h-100 pl-4 pt-3 pb-3 d-flex flex-column justify-content-around" style="flex:1">
+                                        <li><div>实时采集频率<span id="times" class="text-warning">30s</span>/次</div></li>
+                                        <li><div>24小时最大值<span id="h24MaxValue" class="text-warning">···</span>,速率<span id="h24Speed" class="text-warning">···</span>/小时</div></li>
+                                        <li><div>15天最大值<span id="d15MaxValue" class="text-warning">···</span>,速率<span id="d15Speed" class="text-warning">···</span>/天</div></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+            <!-- 下边按钮 -->
+            <footer class="navBottom p-1 pt-2 pb-2 bg-secondBlack">
+                <div class="controlList pl-4 pr-4 h-100 d-flex align-items-center ">
+                    <ul class="row m-auto" style="flex: 1">
+                    </ul>
+                </div>
+            </footer> 
+        </section>
+        <footer id="loadingMask" class="w-100 vh-100">
+            <img src="../img/loading-svg/loading-spinning-bubbles.svg" alt="" srcset="">
+        </footer>
+    </div>
+</body>
+</html>

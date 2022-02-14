@@ -1,0 +1,282 @@
+@font-face {
+    font-family: 'webfont';
+    font-display: swap;
+    src: url('//at.alicdn.com/t/webfont_4lch9qgxst.eot'); /* IE9*/
+    src: url('//at.alicdn.com/t/webfont_4lch9qgxst.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+    url('//at.alicdn.com/t/webfont_4lch9qgxst.woff2') format('woff2'),
+    url('//at.alicdn.com/t/webfont_4lch9qgxst.woff') format('woff'), /* chrome、firefox */
+    url('//at.alicdn.com/t/webfont_4lch9qgxst.ttf') format('truetype'), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
+    url('//at.alicdn.com/t/webfont_4lch9qgxst.svg#阿里汉仪智能黑体') format('svg'); /* iOS 4.1- */
+}
+.web-font{
+    font-family:"webfont" !important;
+    font-size:28px;font-style:normal;
+    -webkit-font-smoothing: antialiased;
+    -webkit-text-stroke-width: 0.2px;
+    -moz-osx-font-smoothing: grayscale;
+}
+body{
+    position: relative;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    overflow: hidden;
+}
+
+ul, li {
+    list-style: none;
+    margin-bottom: 0rem;
+    margin-block-start: 0em;
+    margin-block-end: 0em;
+    padding-inline-start: 0px;
+}
+a {
+    cursor: pointer;
+}
+a:hover {
+    text-decoration: none;
+    color: #00F6FF;
+}
+.bg-black {
+    background-color: #000 !important;
+}
+.bg-secondBlack {
+    background-color: #041746 !important;
+}
+.bg-liver {
+    background-color: rgb(23,91,128) !important;
+}
+.bg-secondLiver {
+    background-color: rgb(13,51,88) !important;
+}
+.text-hightBule {
+    color: #00F6FF;
+    text-shadow: 2px 0 5px #00F6FF;
+}
+.text-bule {
+    color: #37D9FC;
+}
+.ellipsis {
+    text-overflow: ellipsis;
+    overflow: hidden !important;
+    white-space: nowrap;
+}
+.block-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 1;
+    transform: translate(-50%, -50%);
+}
+.container-fluid {
+    width: 100%;
+    min-height: 100vh;
+    box-sizing: border-box; 
+    background: #000;
+}
+.sensorInfo {
+    width: auto;
+    height: auto;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 10;
+    /* display: none; */
+}
+.sensorInfo img{
+    position: absolute;
+    right: 8px;
+    top: 6px;
+}
+.sensorInfo img:hover{
+    transform: scale(1.2);
+    cursor: pointer;
+}
+table tbody tr:hover {
+    cursor: pointer;
+    box-sizing: border-box;
+    box-shadow: 0 0 5px 5px inset #00F6FF;
+}
+/* 头部 */
+#headerNav {
+    flex: 1;
+    position: absolute;
+    left: 50%;
+    top: 0;
+    z-index: 999;
+    bottom: 5px;
+    width: 100vw;
+    height: 72px;
+    transform: translateX(-50%);
+    background: url('../img/headerBox.png') no-repeat;
+    background-size: 125% 150%;
+    background-position: 50% -38px;
+}
+.navRight ,.navLeft{
+    width: 400px;
+    position: fixed;
+    top: 0;
+    z-index: 20;
+    transition: all 0.3s linear;
+}
+.navRight {
+    right: 0; 
+    transform-origin: right top;
+}
+.navLeft {
+    left: 0;
+    transform-origin: left top;
+}
+.navBottom {
+    width: 100%;
+    height: 190px;
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 0;
+    z-index: 15;
+}
+.controlList {
+    background: url('../img/bg-img.png') no-repeat;
+    background-size: 100% 100%;  
+}
+.controlList ul li {
+    text-overflow: ellipsis;
+    overflow: hidden !important;
+    white-space: nowrap;
+    border: 2px solid #37D9FC;
+    border-radius: 5px;
+    padding: 10px 5px;
+    margin-bottom: 5px; 
+}
+.controlList ul li:hover {
+    cursor: pointer;
+    background: rgba(50, 153, 204, .6);
+}
+.selected {
+    color: #eee;
+    background-color: rgb(50, 153, 204)!important;
+}
+/* 状态 */
+.lightStatus li {
+    position: relative;
+}
+.lightStatus li span {
+    position: absolute;
+    top: 3px;
+    left: -28px;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+}
+.lightStatus li:nth-child(1) span {
+    background: #32cd32;
+    box-shadow: 0 0 10px 2px #32cd32;
+}
+.lightStatus li:nth-child(2) span {
+    background: #fff;
+    box-shadow: 0 0 5px 2px #fff;
+}
+.lightStatus li:nth-child(3) span {
+    background: #666;
+    box-shadow: 0 0 10px 2px #666;
+}
+/* 模式切换按钮 */
+#changeView {
+    position: fixed;
+    top: 75px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 15;
+}
+#changeView input[type='checkbox'] {
+    position: relative;
+    -webkit-appearance: none;
+    display: none;
+}
+#changeView input ~ span {
+    position: relative;
+    display: inline-block;
+    width: 100px;
+    height: 25px;
+    cursor: pointer;
+    border-radius: 25px;
+    background: rgba(6, 79, 112, 0.8);
+    box-sizing: content-box;
+}
+#changeView input[type='checkbox']:checked ~ span::after {
+    content:'\6570\636e\6a21\5f0f';/* 数据模式 */
+    transform: translateX(45px);
+}
+#changeView input[type='checkbox'] ~ span::after {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    content:'\73b0\5b9e\6a21\5f0f';/* 现实模式 */
+    width: 55px;
+    height: 25px;
+    line-height: 25px;
+    color: #fff;
+    font-size: 12px;
+    text-align: center;
+    border-radius: 25px;
+    background: #37D9FC;
+    transform: translateX(0);
+    transition: transform 0.2s;
+}
+#loadingMask {
+    position: fixed;
+    z-index: 20;
+    background: rgba(0,0,0,0.1);
+}
+#loadingMask img{
+    color: red !important;
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -25px;
+    margin-top: -80px;
+}
+@media screen and (max-width: 990px){
+    #headerNav div:nth-child(1), 
+    #headerNav div:nth-child(3){
+        display: none !important;
+    }
+    .navRight, .navLeft {
+        display: none;
+    }
+    .navBottom {
+        width: 100% !important;
+    }
+    .content {
+        padding-left: 0;
+    }
+}
+@media all and (min-width: 375px) {
+    html {
+        font-size: 10px;
+    }
+ }
+ @media all and (min-width: 768px) and(max-width:1200px){
+     html {
+         font-size: 12px;
+     }
+  }
+  @media all and (min-width: 1200px) {
+     html {
+         font-size: 14px;
+     }
+  }
+  @media all and (min-width: 1400px) {
+     html {
+         font-size: 16px;
+     }
+  }
+  @media all and (min-width: 1920px) {
+     html {
+         font-size: 18px;
+     }
+  }
